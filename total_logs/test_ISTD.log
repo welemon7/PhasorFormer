@@ -1,0 +1,9 @@
+Namespace(batch_size=8, epoch=600, lr=0.0002, weight_decay=0.0001, num_workers=4, use_cuda=True, checkpoint_dir='checkpoints_ISTD', best_model_path='./checkpoints_ISTD/model_best_ISTD.pth', final_model_path='./checkpoints_ISTD/model_final_ISTD.pth', result_dir='./result_ISTD', log_dir='./checkpoints_ISTD/logs', augment=True, img_size=256, train_data_dir='/media/luosihui/Dataset/ISTD/train/', test_data_dir='/media/luosihui/Dataset/ISTD/test/', validation_freq=1000, warmup_epochs=10, use_mixup=False, mixup_start_epoch=10, use_amp=False, seed=2742, deterministic=False, cudnn_benchmark=False)
+
+start:
+100%|█████████████████████████████████████████████████████████████| 540/540 [00:50<00:00, 10.67it/s]
+
+All-region - SSIM: 0.9725, PSNR: 32.91, RMSE: 3.9862
+shadow-region - SSIM: 0.9921, PSNR: 39.28, RMSE: 5.9801
+non-shadow-region - SSIM: 0.9843, PSNR: 34.74, RMSE: 3.6575
+save to  /home/luosihui/weilianmeng/final-PhasorFormer-ISTD/result_ISTD
