@@ -40,7 +40,7 @@ class Options():
         parser.add_argument('--seed', type=int, default=2742,
                             help='Random seed for reproducibility')    # thanks
         parser.add_argument('--deterministic', action='store_true',
-                            help='Enable deterministic mode for full reproducibility')  # usually True, but can off
+                            help='Enable deterministic mode for full reproducibility')  # usually True
         # "python train.py --deterministic"
         parser.add_argument('--cudnn-benchmark', action='store_true',
                             help='Enable cuDNN benchmark for potentially faster training')  # usually False, but SOTAs use it
