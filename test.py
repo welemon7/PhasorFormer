@@ -36,8 +36,8 @@ test_dataloader = DataLoader(
 
 # ---------------------------------------------------------------------------------------------------------------------
 # model
-from model import StructFormer
-model = StructFormer().cuda()
+from model import PhasorFormer
+model = PhasorFormer().cuda()
 torch.backends.cudnn.benchmark = True
 print("\nstart: ")
 model.load_state_dict(torch.load(opt.best_model_path))
