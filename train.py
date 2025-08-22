@@ -70,13 +70,13 @@ test_dataloader = DataLoader(
 
 # ---------------------------------------------------------------------------------------------------------------------
 # model settings & optimizer & loss
-from model import StructFormer
+from model import PhasorFormer
 from losses import CharbonnierLoss
 from warmup_scheduler import GradualWarmupScheduler
 from torch.optim.lr_scheduler import CosineAnnealingLR
 device = torch.device('cuda' if torch.cuda.is_available() and opt.use_cuda else 'cpu')
 logger.info(f"Using device: {device}")
-model = StructFormer().to(device)
+model = PhasorFormer().to(device)
 optimizer = optim.AdamW(model.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
 criterion_charbonnier = CharbonnierLoss().cuda()
 psnr_metric = PeakSignalNoiseRatio(data_range=1.0).cuda()
