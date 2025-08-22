@@ -38,7 +38,7 @@ class Options():
 
         # args for seed
         parser.add_argument('--seed', type=int, default=2742,
-                            help='Random seed for reproducibility (default: 42)')
+                            help='Random seed for reproducibility')    # thanks
         parser.add_argument('--deterministic', action='store_true',
                             help='Enable deterministic mode for full reproducibility')  # usually True, but can off
         # "python train.py --deterministic"
