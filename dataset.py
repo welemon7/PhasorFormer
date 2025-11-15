@@ -34,7 +34,7 @@ class SRDTrainDataset(Dataset):
             self.augment_transform = None
 
         self.base_transform = transforms.Compose([
-            transforms.Resize((img_size, img_size)),
+            # transforms.Resize((img_size, img_size)),
             transforms.ToTensor(),
         ])
 
@@ -85,7 +85,7 @@ class SRDTestDataset(Dataset):
         self.augment = augment
 
         self.base_transform = transforms.Compose([
-            transforms.Resize((img_size, img_size)),
+            # transforms.Resize((img_size, img_size)),
             transforms.ToTensor(),
         ])
 
