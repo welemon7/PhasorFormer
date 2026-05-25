@@ -1,0 +1,1215 @@
+Namespace(train_ps=384, batch_size=5, nepoch=600, win_size=12, train_dir='/media/luosihui/Dataset/ISTD_Adjusted/train', val_dir='/media/luosihui/Dataset/ISTD_Adjusted/test', input_dir='/media/luosihui/Dataset/ISTD_Adjusted/test', GT_dir='/media/luosihui/Dataset/ISTD_Adjusted/test/non_shadow', mask_dir='/media/luosihui/Dataset/ISTD_Adjusted/test/mask', result_dir='./results/', weights='./log/PhasorFormer_istd/models/model_best.pth', resume=False, warmup=True, warmup_epochs=3, use_amp=True, train_workers=0, eval_workers=8, dataset='ISTD', pretrain_weights='./log/model_best.pth', optimizer='adamw', lr_initial=0.0002, weight_decay=0.02, arch='PhasorFormer', mode='shadow', save_dir='./log', save_images=True, env='_istd', checkpoint=50, norm_layer='nn.LayerNorm', embed_dim=32, token_projection='linear', token_mlp='leff', att_se=False, vit_dim=320, vit_depth=12, vit_nheads=8, vit_mlp_dim=512, vit_patch_size=16, global_skip=False, local_skip=False, vit_share=False)
+PhasorFormer(
+  embed_dim=32, token_projection=linear, token_mlp=leff,win_size=12
+  (pos_drop): Dropout(p=0.0, inplace=False)
+  (struct_fusion): FrequencyExtractor(
+    (amp_net): Sequential(
+      (0): Conv2d(3, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): GELU(approximate='none')
+      (2): Conv2d(3, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+    (phase_net): Sequential(
+      (0): Conv2d(12, 3, kernel_size=(1, 1), stride=(1, 1))
+      (1): GELU(approximate='none')
+      (2): Conv2d(3, 3, kernel_size=(1, 1), stride=(1, 1))
+    )
+    (post): Sequential(
+      (0): Conv2d(3, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): GELU(approximate='none')
+    )
+    (ifft_converter): FrequencyToSpatial(
+      (gate_conv): Sequential(
+        (0): Conv2d(6, 3, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+        (2): Conv2d(3, 3, kernel_size=(1, 1), stride=(1, 1))
+        (3): Sigmoid()
+      )
+      (reconstruct_conv): Sequential(
+        (0): Conv2d(3, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (1): GELU(approximate='none')
+        (2): SpatialAttention(
+          (conv): Conv2d(2, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+  )
+  (struct_proj): Sequential(
+    (0): Conv2d(3, 32, kernel_size=(1, 1), stride=(1, 1))
+    (1): GELU(approximate='none')
+  )
+  (struct_fusions): ModuleList(
+    (0): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(32, 4, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(4, 32, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+    (1): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 64, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(64, 8, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(8, 64, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+    (2): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(16, 128, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+    (3): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(256, 32, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(32, 256, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+    (4): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(512, 64, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(64, 512, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+  )
+  (decoder_fusions): ModuleList(
+    (0): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(512, 64, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(64, 512, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+    (1): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 256, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(256, 32, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(32, 256, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+    (2): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(16, 128, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+    (3): FeatureFusionModule(
+      (struct_adapter): Sequential(
+        (0): Conv2d(32, 65, kernel_size=(1, 1), stride=(1, 1))
+        (1): GELU(approximate='none')
+      )
+      (gate): Sequential(
+        (0): AdaptiveAvgPool2d(output_size=1)
+        (1): Conv2d(65, 8, kernel_size=(1, 1), stride=(1, 1))
+        (2): ReLU(inplace=True)
+        (3): Conv2d(8, 65, kernel_size=(1, 1), stride=(1, 1))
+        (4): Sigmoid()
+      )
+    )
+  )
+  (input_proj): InputProj(
+    (proj): Sequential(
+      (0): Conv2d(4, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): LeakyReLU(negative_slope=0.01, inplace=True)
+    )
+  )
+  (output_proj): OutputProj(
+    (proj): Sequential(
+      (0): Conv2d(66, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+  )
+  (encodelayer_0): BasicUniEncoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniEncoderBlock(
+        (norm1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+        (PModule): PModule(
+          (linear1): Linear(in_features=32, out_features=128, bias=True)
+          (dwconv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          (linear2): Sequential(
+            (0): Linear(in_features=64, out_features=32, bias=True)
+          )
+        )
+        (norm2): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=32, win_size=(12, 12), num_heads=1
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=32, out_features=32, bias=True)
+            (to_kv): Linear(in_features=32, out_features=64, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=32, out_features=32, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+      )
+    )
+  )
+  (downsample_0): Downsample(
+    (conv): Sequential(
+      (0): Conv2d(32, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    )
+  )
+  (encodelayer_1): BasicUniEncoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniEncoderBlock(
+        (norm1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (PModule): PModule(
+          (linear1): Linear(in_features=64, out_features=256, bias=True)
+          (dwconv): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+          (linear2): Sequential(
+            (0): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+        (norm2): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=64, win_size=(12, 12), num_heads=2
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=64, out_features=64, bias=True)
+            (to_kv): Linear(in_features=64, out_features=128, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=64, out_features=64, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+      )
+    )
+  )
+  (downsample_1): Downsample(
+    (conv): Sequential(
+      (0): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    )
+  )
+  (encodelayer_2): BasicUniEncoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniEncoderBlock(
+        (norm1): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+        (PModule): PModule(
+          (linear1): Linear(in_features=128, out_features=512, bias=True)
+          (dwconv): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512)
+          (linear2): Sequential(
+            (0): Linear(in_features=256, out_features=128, bias=True)
+          )
+        )
+        (norm2): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=128, win_size=(12, 12), num_heads=4
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=128, out_features=128, bias=True)
+            (to_kv): Linear(in_features=128, out_features=256, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=128, out_features=128, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+      )
+    )
+  )
+  (downsample_2): Downsample(
+    (conv): Sequential(
+      (0): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    )
+  )
+  (encodelayer_3): BasicUniEncoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniEncoderBlock(
+        (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+        (PModule): PModule(
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dwconv): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024)
+          (linear2): Sequential(
+            (0): Linear(in_features=512, out_features=256, bias=True)
+          )
+        )
+        (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=256, win_size=(12, 12), num_heads=8
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=256, out_features=256, bias=True)
+            (to_kv): Linear(in_features=256, out_features=512, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=256, out_features=256, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+      )
+    )
+  )
+  (downsample_3): Downsample(
+    (conv): Sequential(
+      (0): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    )
+  )
+  (conv): BasicUniEncoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniEncoderBlock(
+        (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+        (PModule): PModule(
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dwconv): Conv2d(2048, 2048, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=2048)
+          (linear2): Sequential(
+            (0): Linear(in_features=1024, out_features=512, bias=True)
+          )
+        )
+        (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=512, win_size=(12, 12), num_heads=16
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=512, out_features=512, bias=True)
+            (to_kv): Linear(in_features=512, out_features=1024, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=512, out_features=512, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+      )
+    )
+  )
+  (upsample_0): Upsample(
+    (deconv): Sequential(
+      (0): ConvTranspose2d(512, 256, kernel_size=(2, 2), stride=(2, 2))
+    )
+  )
+  (decodelayer_0): BasicUniDecoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniDecoderBlock(
+        (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=512, win_size=(12, 12), num_heads=16
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=512, out_features=512, bias=True)
+            (to_kv): Linear(in_features=512, out_features=1024, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=512, out_features=512, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+        (PModule): PModule(
+          (linear1): Linear(in_features=512, out_features=2048, bias=True)
+          (dwconv): Conv2d(2048, 2048, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=2048)
+          (linear2): Sequential(
+            (0): Linear(in_features=1024, out_features=512, bias=True)
+          )
+        )
+      )
+    )
+  )
+  (upsample_1): Upsample(
+    (deconv): Sequential(
+      (0): ConvTranspose2d(512, 128, kernel_size=(2, 2), stride=(2, 2))
+    )
+  )
+  (decodelayer_1): BasicUniDecoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniDecoderBlock(
+        (norm1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=256, win_size=(12, 12), num_heads=8
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=256, out_features=256, bias=True)
+            (to_kv): Linear(in_features=256, out_features=512, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=256, out_features=256, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+        (PModule): PModule(
+          (linear1): Linear(in_features=256, out_features=1024, bias=True)
+          (dwconv): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024)
+          (linear2): Sequential(
+            (0): Linear(in_features=512, out_features=256, bias=True)
+          )
+        )
+      )
+    )
+  )
+  (upsample_2): Upsample(
+    (deconv): Sequential(
+      (0): ConvTranspose2d(256, 64, kernel_size=(2, 2), stride=(2, 2))
+    )
+  )
+  (decodelayer_2): BasicUniDecoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniDecoderBlock(
+        (norm1): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=128, win_size=(12, 12), num_heads=4
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=128, out_features=128, bias=True)
+            (to_kv): Linear(in_features=128, out_features=256, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=128, out_features=128, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+        (PModule): PModule(
+          (linear1): Linear(in_features=128, out_features=512, bias=True)
+          (dwconv): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512)
+          (linear2): Sequential(
+            (0): Linear(in_features=256, out_features=128, bias=True)
+          )
+        )
+      )
+    )
+  )
+  (upsample_3): Upsample(
+    (deconv): Sequential(
+      (0): ConvTranspose2d(128, 32, kernel_size=(2, 2), stride=(2, 2))
+    )
+  )
+  (decodelayer_3): BasicUniDecoderLayer(
+    (blocks): ModuleList(
+      (0-1): 2 x BasicUniDecoderBlock(
+        (norm1): LayerNorm((65,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((65,), eps=1e-05, elementwise_affine=True)
+        (attn): WindowAttention(
+          dim=65, win_size=(12, 12), num_heads=1
+          (qkv): LinearProjection(
+            (to_q): Linear(in_features=65, out_features=65, bias=True)
+            (to_kv): Linear(in_features=65, out_features=130, bias=True)
+          )
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=65, out_features=65, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+          (softmax): Softmax(dim=-1)
+        )
+        (drop_path): Identity()
+        (PModule): PModule(
+          (linear1): Linear(in_features=65, out_features=260, bias=True)
+          (dwconv): Conv2d(260, 260, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=260)
+          (linear2): Sequential(
+            (0): Linear(in_features=130, out_features=65, bias=True)
+          )
+        )
+      )
+    )
+  )
+)
+Epoch: 1	Time: 116.42s	Loss: 0.0437	Train PSNR: 23.85	LearningRate 0.000133
+Epoch: 2	Time: 105.54s	Loss: 0.0359	Train PSNR: 24.90	LearningRate 0.000200
+Epoch: 3	Time: 107.42s	Loss: 0.0329	Train PSNR: 25.71	LearningRate 0.000200
+[Ep 4 it 200	 Val PSNR: 28.34	] ----  [best_Ep 4 best_it 200 Best_PSNR 28.34] 
+Epoch: 4	Time: 165.49s	Loss: 0.0315	Train PSNR: 26.04	LearningRate 0.000200
+Epoch: 5	Time: 105.95s	Loss: 0.0293	Train PSNR: 26.66	LearningRate 0.000200
+Epoch: 6	Time: 107.42s	Loss: 0.0287	Train PSNR: 27.51	LearningRate 0.000200
+Epoch: 7	Time: 106.89s	Loss: 0.0271	Train PSNR: 27.97	LearningRate 0.000200
+[Ep 8 it 136	 Val PSNR: 28.57	] ----  [best_Ep 8 best_it 136 Best_PSNR 28.57] 
+Epoch: 8	Time: 162.44s	Loss: 0.0254	Train PSNR: 28.50	LearningRate 0.000200
+Epoch: 9	Time: 106.93s	Loss: 0.0242	Train PSNR: 28.99	LearningRate 0.000200
+Epoch: 10	Time: 106.76s	Loss: 0.0241	Train PSNR: 28.99	LearningRate 0.000200
+Epoch: 11	Time: 107.03s	Loss: 0.0237	Train PSNR: 29.16	LearningRate 0.000200
+[Ep 12 it 72	 Val PSNR: 29.67	] ----  [best_Ep 12 best_it 72 Best_PSNR 29.67] 
+Epoch: 12	Time: 162.50s	Loss: 0.0232	Train PSNR: 29.28	LearningRate 0.000200
+Epoch: 13	Time: 106.67s	Loss: 0.0230	Train PSNR: 29.46	LearningRate 0.000200
+Epoch: 14	Time: 106.77s	Loss: 0.0224	Train PSNR: 29.60	LearningRate 0.000200
+Epoch: 15	Time: 105.62s	Loss: 0.0226	Train PSNR: 29.60	LearningRate 0.000200
+[Ep 16 it 8	 Val PSNR: 31.03	] ----  [best_Ep 16 best_it 8 Best_PSNR 31.03] 
+Epoch: 16	Time: 162.56s	Loss: 0.0213	Train PSNR: 30.04	LearningRate 0.000200
+Epoch: 17	Time: 106.72s	Loss: 0.0222	Train PSNR: 29.76	LearningRate 0.000200
+Epoch: 18	Time: 105.75s	Loss: 0.0211	Train PSNR: 30.11	LearningRate 0.000200
+[Ep 19 it 210	 Val PSNR: 30.65	] ----  [best_Ep 16 best_it 8 Best_PSNR 31.03] 
+Epoch: 19	Time: 161.45s	Loss: 0.0212	Train PSNR: 30.15	LearningRate 0.000200
+Epoch: 20	Time: 106.41s	Loss: 0.0215	Train PSNR: 30.07	LearningRate 0.000200
+Epoch: 21	Time: 105.96s	Loss: 0.0215	Train PSNR: 30.00	LearningRate 0.000200
+Epoch: 22	Time: 106.30s	Loss: 0.0205	Train PSNR: 30.41	LearningRate 0.000199
+[Ep 23 it 146	 Val PSNR: 31.17	] ----  [best_Ep 23 best_it 146 Best_PSNR 31.17] 
+Epoch: 23	Time: 162.66s	Loss: 0.0203	Train PSNR: 30.51	LearningRate 0.000199
+Epoch: 24	Time: 106.37s	Loss: 0.0204	Train PSNR: 30.43	LearningRate 0.000199
+Epoch: 25	Time: 106.18s	Loss: 0.0206	Train PSNR: 30.51	LearningRate 0.000199
+Epoch: 26	Time: 106.64s	Loss: 0.0204	Train PSNR: 30.51	LearningRate 0.000199
+[Ep 27 it 82	 Val PSNR: 31.05	] ----  [best_Ep 23 best_it 146 Best_PSNR 31.17] 
+Epoch: 27	Time: 162.00s	Loss: 0.0203	Train PSNR: 30.53	LearningRate 0.000199
+Epoch: 28	Time: 106.70s	Loss: 0.0200	Train PSNR: 30.62	LearningRate 0.000199
+Epoch: 29	Time: 109.38s	Loss: 0.0198	Train PSNR: 30.77	LearningRate 0.000199
+Epoch: 30	Time: 108.63s	Loss: 0.0199	Train PSNR: 30.75	LearningRate 0.000199
+[Ep 31 it 18	 Val PSNR: 31.59	] ----  [best_Ep 31 best_it 18 Best_PSNR 31.59] 
+Epoch: 31	Time: 162.47s	Loss: 0.0195	Train PSNR: 30.84	LearningRate 0.000199
+Epoch: 32	Time: 108.72s	Loss: 0.0194	Train PSNR: 30.89	LearningRate 0.000199
+Epoch: 33	Time: 109.84s	Loss: 0.0194	Train PSNR: 30.95	LearningRate 0.000199
+[Ep 34 it 220	 Val PSNR: 31.43	] ----  [best_Ep 31 best_it 18 Best_PSNR 31.59] 
+Epoch: 34	Time: 164.31s	Loss: 0.0191	Train PSNR: 31.20	LearningRate 0.000199
+Epoch: 35	Time: 105.70s	Loss: 0.0191	Train PSNR: 31.10	LearningRate 0.000199
+Epoch: 36	Time: 109.28s	Loss: 0.0186	Train PSNR: 31.30	LearningRate 0.000198
+Epoch: 37	Time: 108.92s	Loss: 0.0194	Train PSNR: 30.94	LearningRate 0.000198
+[Ep 38 it 156	 Val PSNR: 31.72	] ----  [best_Ep 38 best_it 156 Best_PSNR 31.72] 
+Epoch: 38	Time: 165.37s	Loss: 0.0194	Train PSNR: 30.95	LearningRate 0.000198
+Epoch: 39	Time: 108.40s	Loss: 0.0190	Train PSNR: 31.11	LearningRate 0.000198
+Epoch: 40	Time: 109.32s	Loss: 0.0189	Train PSNR: 31.17	LearningRate 0.000198
+Epoch: 41	Time: 109.64s	Loss: 0.0187	Train PSNR: 31.30	LearningRate 0.000198
+[Ep 42 it 92	 Val PSNR: 31.81	] ----  [best_Ep 42 best_it 92 Best_PSNR 31.81] 
+Epoch: 42	Time: 165.90s	Loss: 0.0188	Train PSNR: 31.26	LearningRate 0.000198
+Epoch: 43	Time: 109.53s	Loss: 0.0189	Train PSNR: 31.13	LearningRate 0.000198
+Epoch: 44	Time: 109.04s	Loss: 0.0184	Train PSNR: 31.43	LearningRate 0.000198
+Epoch: 45	Time: 108.46s	Loss: 0.0186	Train PSNR: 31.29	LearningRate 0.000197
+[Ep 46 it 28	 Val PSNR: 32.06	] ----  [best_Ep 46 best_it 28 Best_PSNR 32.06] 
+Epoch: 46	Time: 162.82s	Loss: 0.0186	Train PSNR: 31.29	LearningRate 0.000197
+Epoch: 47	Time: 106.54s	Loss: 0.0189	Train PSNR: 31.20	LearningRate 0.000197
+Epoch: 48	Time: 109.54s	Loss: 0.0181	Train PSNR: 31.46	LearningRate 0.000197
+[Ep 49 it 230	 Val PSNR: 31.42	] ----  [best_Ep 46 best_it 28 Best_PSNR 32.06] 
+Epoch: 49	Time: 166.08s	Loss: 0.0185	Train PSNR: 31.31	LearningRate 0.000197
+Epoch: 50	Time: 106.77s	Loss: 0.0185	Train PSNR: 31.37	LearningRate 0.000197
+Epoch: 51	Time: 107.03s	Loss: 0.0180	Train PSNR: 31.65	LearningRate 0.000197
+Epoch: 52	Time: 109.78s	Loss: 0.0184	Train PSNR: 31.43	LearningRate 0.000197
+[Ep 53 it 166	 Val PSNR: 32.08	] ----  [best_Ep 53 best_it 166 Best_PSNR 32.08] 
+Epoch: 53	Time: 165.55s	Loss: 0.0180	Train PSNR: 31.65	LearningRate 0.000196
+Epoch: 54	Time: 106.34s	Loss: 0.0181	Train PSNR: 31.55	LearningRate 0.000196
+Epoch: 55	Time: 109.08s	Loss: 0.0179	Train PSNR: 31.63	LearningRate 0.000196
+Epoch: 56	Time: 108.21s	Loss: 0.0180	Train PSNR: 31.55	LearningRate 0.000196
+[Ep 57 it 102	 Val PSNR: 31.54	] ----  [best_Ep 53 best_it 166 Best_PSNR 32.08] 
+Epoch: 57	Time: 163.72s	Loss: 0.0184	Train PSNR: 31.45	LearningRate 0.000196
+Epoch: 58	Time: 107.14s	Loss: 0.0181	Train PSNR: 31.59	LearningRate 0.000196
+Epoch: 59	Time: 106.81s	Loss: 0.0177	Train PSNR: 31.76	LearningRate 0.000196
+Epoch: 60	Time: 109.98s	Loss: 0.0180	Train PSNR: 31.58	LearningRate 0.000195
+[Ep 61 it 38	 Val PSNR: 31.61	] ----  [best_Ep 53 best_it 166 Best_PSNR 32.08] 
+Epoch: 61	Time: 165.43s	Loss: 0.0180	Train PSNR: 31.63	LearningRate 0.000195
+Epoch: 62	Time: 109.91s	Loss: 0.0180	Train PSNR: 31.65	LearningRate 0.000195
+Epoch: 63	Time: 108.52s	Loss: 0.0176	Train PSNR: 31.79	LearningRate 0.000195
+[Ep 64 it 240	 Val PSNR: 31.72	] ----  [best_Ep 53 best_it 166 Best_PSNR 32.08] 
+Epoch: 64	Time: 164.81s	Loss: 0.0176	Train PSNR: 31.78	LearningRate 0.000195
+Epoch: 65	Time: 109.61s	Loss: 0.0178	Train PSNR: 31.75	LearningRate 0.000195
+Epoch: 66	Time: 110.09s	Loss: 0.0175	Train PSNR: 31.89	LearningRate 0.000194
+Epoch: 67	Time: 109.47s	Loss: 0.0180	Train PSNR: 31.62	LearningRate 0.000194
+[Ep 68 it 176	 Val PSNR: 32.20	] ----  [best_Ep 68 best_it 176 Best_PSNR 32.20] 
+Epoch: 68	Time: 166.02s	Loss: 0.0174	Train PSNR: 31.96	LearningRate 0.000194
+Epoch: 69	Time: 108.72s	Loss: 0.0173	Train PSNR: 31.95	LearningRate 0.000194
+Epoch: 70	Time: 109.68s	Loss: 0.0176	Train PSNR: 31.82	LearningRate 0.000194
+Epoch: 71	Time: 109.37s	Loss: 0.0176	Train PSNR: 31.82	LearningRate 0.000194
+[Ep 72 it 112	 Val PSNR: 32.39	] ----  [best_Ep 72 best_it 112 Best_PSNR 32.39] 
+Epoch: 72	Time: 166.65s	Loss: 0.0170	Train PSNR: 32.13	LearningRate 0.000193
+Epoch: 73	Time: 110.25s	Loss: 0.0172	Train PSNR: 32.01	LearningRate 0.000193
+Epoch: 74	Time: 110.04s	Loss: 0.0173	Train PSNR: 31.98	LearningRate 0.000193
+Epoch: 75	Time: 110.13s	Loss: 0.0174	Train PSNR: 31.93	LearningRate 0.000193
+[Ep 76 it 48	 Val PSNR: 32.36	] ----  [best_Ep 72 best_it 112 Best_PSNR 32.39] 
+Epoch: 76	Time: 166.56s	Loss: 0.0171	Train PSNR: 32.05	LearningRate 0.000193
+Epoch: 77	Time: 110.31s	Loss: 0.0175	Train PSNR: 31.82	LearningRate 0.000192
+Epoch: 78	Time: 111.18s	Loss: 0.0172	Train PSNR: 32.04	LearningRate 0.000192
+[Ep 79 it 250	 Val PSNR: 32.44	] ----  [best_Ep 79 best_it 250 Best_PSNR 32.44] 
+Epoch: 79	Time: 166.47s	Loss: 0.0172	Train PSNR: 32.05	LearningRate 0.000192
+Epoch: 80	Time: 108.65s	Loss: 0.0174	Train PSNR: 31.90	LearningRate 0.000192
+Epoch: 81	Time: 110.51s	Loss: 0.0171	Train PSNR: 32.10	LearningRate 0.000192
+Epoch: 82	Time: 106.97s	Loss: 0.0170	Train PSNR: 32.10	LearningRate 0.000191
+[Ep 83 it 186	 Val PSNR: 32.19	] ----  [best_Ep 79 best_it 250 Best_PSNR 32.44] 
+Epoch: 83	Time: 163.35s	Loss: 0.0170	Train PSNR: 32.10	LearningRate 0.000191
+Epoch: 84	Time: 106.41s	Loss: 0.0172	Train PSNR: 32.05	LearningRate 0.000191
+Epoch: 85	Time: 106.36s	Loss: 0.0168	Train PSNR: 32.24	LearningRate 0.000191
+Epoch: 86	Time: 107.17s	Loss: 0.0171	Train PSNR: 32.07	LearningRate 0.000190
+[Ep 87 it 122	 Val PSNR: 32.43	] ----  [best_Ep 79 best_it 250 Best_PSNR 32.44] 
+Epoch: 87	Time: 162.34s	Loss: 0.0171	Train PSNR: 32.05	LearningRate 0.000190
+Epoch: 88	Time: 106.40s	Loss: 0.0168	Train PSNR: 32.20	LearningRate 0.000190
+Epoch: 89	Time: 106.36s	Loss: 0.0168	Train PSNR: 32.24	LearningRate 0.000190
+Epoch: 90	Time: 106.38s	Loss: 0.0170	Train PSNR: 32.13	LearningRate 0.000190
+[Ep 91 it 58	 Val PSNR: 32.10	] ----  [best_Ep 79 best_it 250 Best_PSNR 32.44] 
+Epoch: 91	Time: 162.48s	Loss: 0.0168	Train PSNR: 32.17	LearningRate 0.000189
+Epoch: 92	Time: 106.82s	Loss: 0.0172	Train PSNR: 32.04	LearningRate 0.000189
+Epoch: 93	Time: 106.34s	Loss: 0.0168	Train PSNR: 32.17	LearningRate 0.000189
+[Ep 94 it 260	 Val PSNR: 32.46	] ----  [best_Ep 94 best_it 260 Best_PSNR 32.46] 
+Epoch: 94	Time: 163.49s	Loss: 0.0168	Train PSNR: 32.28	LearningRate 0.000189
+Epoch: 95	Time: 106.66s	Loss: 0.0168	Train PSNR: 32.23	LearningRate 0.000188
+Epoch: 96	Time: 106.66s	Loss: 0.0167	Train PSNR: 32.27	LearningRate 0.000188
+Epoch: 97	Time: 106.67s	Loss: 0.0165	Train PSNR: 32.45	LearningRate 0.000188
+[Ep 98 it 196	 Val PSNR: 31.81	] ----  [best_Ep 94 best_it 260 Best_PSNR 32.46] 
+Epoch: 98	Time: 163.52s	Loss: 0.0170	Train PSNR: 32.16	LearningRate 0.000188
+Epoch: 99	Time: 106.34s	Loss: 0.0166	Train PSNR: 32.36	LearningRate 0.000187
+Epoch: 100	Time: 106.94s	Loss: 0.0168	Train PSNR: 32.22	LearningRate 0.000187
+Epoch: 101	Time: 106.94s	Loss: 0.0164	Train PSNR: 32.51	LearningRate 0.000187
+[Ep 102 it 132	 Val PSNR: 32.31	] ----  [best_Ep 94 best_it 260 Best_PSNR 32.46] 
+Epoch: 102	Time: 162.11s	Loss: 0.0165	Train PSNR: 32.37	LearningRate 0.000187
+Epoch: 103	Time: 106.60s	Loss: 0.0163	Train PSNR: 32.53	LearningRate 0.000186
+Epoch: 104	Time: 107.23s	Loss: 0.0167	Train PSNR: 32.34	LearningRate 0.000186
+Epoch: 105	Time: 106.46s	Loss: 0.0167	Train PSNR: 32.30	LearningRate 0.000186
+[Ep 106 it 68	 Val PSNR: 32.51	] ----  [best_Ep 106 best_it 68 Best_PSNR 32.51] 
+Epoch: 106	Time: 162.95s	Loss: 0.0165	Train PSNR: 32.37	LearningRate 0.000185
+Epoch: 107	Time: 107.26s	Loss: 0.0166	Train PSNR: 32.32	LearningRate 0.000185
+Epoch: 108	Time: 106.21s	Loss: 0.0167	Train PSNR: 32.25	LearningRate 0.000185
+Epoch: 109	Time: 106.88s	Loss: 0.0165	Train PSNR: 32.47	LearningRate 0.000185
+[Ep 110 it 4	 Val PSNR: 32.37	] ----  [best_Ep 106 best_it 68 Best_PSNR 32.51] 
+Epoch: 110	Time: 163.31s	Loss: 0.0168	Train PSNR: 32.24	LearningRate 0.000184
+Epoch: 111	Time: 106.57s	Loss: 0.0164	Train PSNR: 32.45	LearningRate 0.000184
+Epoch: 112	Time: 106.96s	Loss: 0.0165	Train PSNR: 32.41	LearningRate 0.000184
+[Ep 113 it 206	 Val PSNR: 32.38	] ----  [best_Ep 106 best_it 68 Best_PSNR 32.51] 
+Epoch: 113	Time: 162.71s	Loss: 0.0162	Train PSNR: 32.51	LearningRate 0.000184
+Epoch: 114	Time: 106.33s	Loss: 0.0163	Train PSNR: 32.53	LearningRate 0.000183
+Epoch: 115	Time: 107.44s	Loss: 0.0165	Train PSNR: 32.42	LearningRate 0.000183
+Epoch: 116	Time: 106.82s	Loss: 0.0161	Train PSNR: 32.56	LearningRate 0.000183
+[Ep 117 it 142	 Val PSNR: 32.28	] ----  [best_Ep 106 best_it 68 Best_PSNR 32.51] 
+Epoch: 117	Time: 162.50s	Loss: 0.0163	Train PSNR: 32.47	LearningRate 0.000182
+Epoch: 118	Time: 106.94s	Loss: 0.0162	Train PSNR: 32.51	LearningRate 0.000182
+Epoch: 119	Time: 106.56s	Loss: 0.0163	Train PSNR: 32.53	LearningRate 0.000182
+Epoch: 120	Time: 107.41s	Loss: 0.0162	Train PSNR: 32.55	LearningRate 0.000181
+[Ep 121 it 78	 Val PSNR: 32.64	] ----  [best_Ep 121 best_it 78 Best_PSNR 32.64] 
+Epoch: 121	Time: 162.89s	Loss: 0.0163	Train PSNR: 32.55	LearningRate 0.000181
+Epoch: 122	Time: 106.01s	Loss: 0.0162	Train PSNR: 32.59	LearningRate 0.000181
+Epoch: 123	Time: 106.55s	Loss: 0.0161	Train PSNR: 32.64	LearningRate 0.000181
+Epoch: 124	Time: 106.40s	Loss: 0.0162	Train PSNR: 32.54	LearningRate 0.000180
+[Ep 125 it 14	 Val PSNR: 32.26	] ----  [best_Ep 121 best_it 78 Best_PSNR 32.64] 
+Epoch: 125	Time: 161.87s	Loss: 0.0161	Train PSNR: 32.63	LearningRate 0.000180
+Epoch: 126	Time: 106.62s	Loss: 0.0161	Train PSNR: 32.62	LearningRate 0.000180
+Epoch: 127	Time: 106.32s	Loss: 0.0160	Train PSNR: 32.64	LearningRate 0.000179
+[Ep 128 it 216	 Val PSNR: 32.51	] ----  [best_Ep 121 best_it 78 Best_PSNR 32.64] 
+Epoch: 128	Time: 162.13s	Loss: 0.0160	Train PSNR: 32.66	LearningRate 0.000179
+Epoch: 129	Time: 106.46s	Loss: 0.0161	Train PSNR: 32.60	LearningRate 0.000179
+Epoch: 130	Time: 106.34s	Loss: 0.0159	Train PSNR: 32.75	LearningRate 0.000178
+Epoch: 131	Time: 106.64s	Loss: 0.0160	Train PSNR: 32.63	LearningRate 0.000178
+[Ep 132 it 152	 Val PSNR: 32.50	] ----  [best_Ep 121 best_it 78 Best_PSNR 32.64] 
+Epoch: 132	Time: 162.30s	Loss: 0.0159	Train PSNR: 32.71	LearningRate 0.000178
+Epoch: 133	Time: 106.81s	Loss: 0.0155	Train PSNR: 32.89	LearningRate 0.000177
+Epoch: 134	Time: 106.51s	Loss: 0.0161	Train PSNR: 32.61	LearningRate 0.000177
+Epoch: 135	Time: 106.28s	Loss: 0.0158	Train PSNR: 32.78	LearningRate 0.000177
+[Ep 136 it 88	 Val PSNR: 32.43	] ----  [best_Ep 121 best_it 78 Best_PSNR 32.64] 
+Epoch: 136	Time: 162.84s	Loss: 0.0159	Train PSNR: 32.70	LearningRate 0.000176
+Epoch: 137	Time: 106.49s	Loss: 0.0158	Train PSNR: 32.73	LearningRate 0.000176
+Epoch: 138	Time: 106.36s	Loss: 0.0159	Train PSNR: 32.63	LearningRate 0.000176
+Epoch: 139	Time: 107.13s	Loss: 0.0158	Train PSNR: 32.78	LearningRate 0.000175
+[Ep 140 it 24	 Val PSNR: 32.65	] ----  [best_Ep 140 best_it 24 Best_PSNR 32.65] 
+Epoch: 140	Time: 162.58s	Loss: 0.0158	Train PSNR: 32.69	LearningRate 0.000175
+Epoch: 141	Time: 106.48s	Loss: 0.0157	Train PSNR: 32.79	LearningRate 0.000175
+Epoch: 142	Time: 106.59s	Loss: 0.0157	Train PSNR: 32.74	LearningRate 0.000174
+[Ep 143 it 226	 Val PSNR: 32.79	] ----  [best_Ep 143 best_it 226 Best_PSNR 32.79] 
+Epoch: 143	Time: 162.29s	Loss: 0.0158	Train PSNR: 32.78	LearningRate 0.000174
+Epoch: 144	Time: 106.39s	Loss: 0.0157	Train PSNR: 32.71	LearningRate 0.000173
+Epoch: 145	Time: 106.10s	Loss: 0.0160	Train PSNR: 32.64	LearningRate 0.000173
+Epoch: 146	Time: 106.73s	Loss: 0.0157	Train PSNR: 32.84	LearningRate 0.000173
+[Ep 147 it 162	 Val PSNR: 32.67	] ----  [best_Ep 143 best_it 226 Best_PSNR 32.79] 
+Epoch: 147	Time: 161.87s	Loss: 0.0158	Train PSNR: 32.73	LearningRate 0.000172
+Epoch: 148	Time: 106.07s	Loss: 0.0162	Train PSNR: 32.50	LearningRate 0.000172
+Epoch: 149	Time: 106.60s	Loss: 0.0160	Train PSNR: 32.57	LearningRate 0.000172
+Epoch: 150	Time: 106.30s	Loss: 0.0158	Train PSNR: 32.69	LearningRate 0.000171
+[Ep 151 it 98	 Val PSNR: 32.80	] ----  [best_Ep 151 best_it 98 Best_PSNR 32.80] 
+Epoch: 151	Time: 163.08s	Loss: 0.0156	Train PSNR: 32.83	LearningRate 0.000171
+Epoch: 152	Time: 107.03s	Loss: 0.0156	Train PSNR: 32.90	LearningRate 0.000171
+Epoch: 153	Time: 106.33s	Loss: 0.0156	Train PSNR: 32.80	LearningRate 0.000170
+Epoch: 154	Time: 107.19s	Loss: 0.0156	Train PSNR: 32.79	LearningRate 0.000170
+[Ep 155 it 34	 Val PSNR: 32.73	] ----  [best_Ep 151 best_it 98 Best_PSNR 32.80] 
+Epoch: 155	Time: 161.99s	Loss: 0.0156	Train PSNR: 32.95	LearningRate 0.000169
+Epoch: 156	Time: 106.21s	Loss: 0.0158	Train PSNR: 32.72	LearningRate 0.000169
+Epoch: 157	Time: 106.60s	Loss: 0.0155	Train PSNR: 32.97	LearningRate 0.000169
+[Ep 158 it 236	 Val PSNR: 32.58	] ----  [best_Ep 151 best_it 98 Best_PSNR 32.80] 
+Epoch: 158	Time: 161.87s	Loss: 0.0154	Train PSNR: 32.93	LearningRate 0.000168
+Epoch: 159	Time: 106.22s	Loss: 0.0157	Train PSNR: 32.87	LearningRate 0.000168
+Epoch: 160	Time: 106.75s	Loss: 0.0156	Train PSNR: 32.84	LearningRate 0.000168
+Epoch: 161	Time: 106.11s	Loss: 0.0155	Train PSNR: 32.99	LearningRate 0.000167
+[Ep 162 it 172	 Val PSNR: 32.77	] ----  [best_Ep 151 best_it 98 Best_PSNR 32.80] 
+Epoch: 162	Time: 162.55s	Loss: 0.0157	Train PSNR: 32.85	LearningRate 0.000167
+Epoch: 163	Time: 107.71s	Loss: 0.0157	Train PSNR: 32.79	LearningRate 0.000166
+Epoch: 164	Time: 107.18s	Loss: 0.0154	Train PSNR: 32.94	LearningRate 0.000166
+Epoch: 165	Time: 107.48s	Loss: 0.0156	Train PSNR: 32.89	LearningRate 0.000166
+[Ep 166 it 108	 Val PSNR: 32.78	] ----  [best_Ep 151 best_it 98 Best_PSNR 32.80] 
+Epoch: 166	Time: 162.80s	Loss: 0.0151	Train PSNR: 33.15	LearningRate 0.000165
+Epoch: 167	Time: 106.52s	Loss: 0.0155	Train PSNR: 32.93	LearningRate 0.000165
+Epoch: 168	Time: 106.86s	Loss: 0.0153	Train PSNR: 33.11	LearningRate 0.000164
+Epoch: 169	Time: 106.40s	Loss: 0.0150	Train PSNR: 33.20	LearningRate 0.000164
+[Ep 170 it 44	 Val PSNR: 32.87	] ----  [best_Ep 170 best_it 44 Best_PSNR 32.87] 
+Epoch: 170	Time: 162.95s	Loss: 0.0155	Train PSNR: 32.88	LearningRate 0.000164
+Epoch: 171	Time: 106.81s	Loss: 0.0153	Train PSNR: 32.98	LearningRate 0.000163
+Epoch: 172	Time: 106.16s	Loss: 0.0154	Train PSNR: 33.00	LearningRate 0.000163
+[Ep 173 it 246	 Val PSNR: 32.67	] ----  [best_Ep 170 best_it 44 Best_PSNR 32.87] 
+Epoch: 173	Time: 162.57s	Loss: 0.0155	Train PSNR: 32.87	LearningRate 0.000162
+Epoch: 174	Time: 106.30s	Loss: 0.0155	Train PSNR: 32.96	LearningRate 0.000162
+Epoch: 175	Time: 106.14s	Loss: 0.0156	Train PSNR: 32.96	LearningRate 0.000162
+Epoch: 176	Time: 106.62s	Loss: 0.0153	Train PSNR: 32.99	LearningRate 0.000161
+[Ep 177 it 182	 Val PSNR: 32.63	] ----  [best_Ep 170 best_it 44 Best_PSNR 32.87] 
+Epoch: 177	Time: 162.50s	Loss: 0.0154	Train PSNR: 32.99	LearningRate 0.000161
+Epoch: 178	Time: 106.53s	Loss: 0.0153	Train PSNR: 33.03	LearningRate 0.000160
+Epoch: 179	Time: 106.84s	Loss: 0.0154	Train PSNR: 33.00	LearningRate 0.000160
+Epoch: 180	Time: 107.45s	Loss: 0.0152	Train PSNR: 33.08	LearningRate 0.000159
+[Ep 181 it 118	 Val PSNR: 32.69	] ----  [best_Ep 170 best_it 44 Best_PSNR 32.87] 
+Epoch: 181	Time: 162.80s	Loss: 0.0152	Train PSNR: 33.14	LearningRate 0.000159
+Epoch: 182	Time: 106.96s	Loss: 0.0154	Train PSNR: 32.97	LearningRate 0.000159
+Epoch: 183	Time: 106.92s	Loss: 0.0152	Train PSNR: 33.07	LearningRate 0.000158
+Epoch: 184	Time: 106.41s	Loss: 0.0151	Train PSNR: 33.14	LearningRate 0.000158
+[Ep 185 it 54	 Val PSNR: 32.65	] ----  [best_Ep 170 best_it 44 Best_PSNR 32.87] 
+Epoch: 185	Time: 162.95s	Loss: 0.0153	Train PSNR: 33.06	LearningRate 0.000157
+Epoch: 186	Time: 106.97s	Loss: 0.0153	Train PSNR: 33.07	LearningRate 0.000157
+Epoch: 187	Time: 106.29s	Loss: 0.0152	Train PSNR: 33.06	LearningRate 0.000156
+[Ep 188 it 256	 Val PSNR: 32.82	] ----  [best_Ep 170 best_it 44 Best_PSNR 32.87] 
+Epoch: 188	Time: 162.42s	Loss: 0.0151	Train PSNR: 33.11	LearningRate 0.000156
+Epoch: 189	Time: 106.51s	Loss: 0.0149	Train PSNR: 33.18	LearningRate 0.000156
+Epoch: 190	Time: 106.54s	Loss: 0.0153	Train PSNR: 33.00	LearningRate 0.000155
+Epoch: 191	Time: 106.43s	Loss: 0.0153	Train PSNR: 33.06	LearningRate 0.000155
+[Ep 192 it 192	 Val PSNR: 32.74	] ----  [best_Ep 170 best_it 44 Best_PSNR 32.87] 
+Epoch: 192	Time: 162.64s	Loss: 0.0152	Train PSNR: 33.14	LearningRate 0.000154
+Epoch: 193	Time: 106.63s	Loss: 0.0151	Train PSNR: 33.13	LearningRate 0.000154
+Epoch: 194	Time: 106.87s	Loss: 0.0149	Train PSNR: 33.31	LearningRate 0.000153
+Epoch: 195	Time: 106.84s	Loss: 0.0149	Train PSNR: 33.24	LearningRate 0.000153
+[Ep 196 it 128	 Val PSNR: 32.89	] ----  [best_Ep 196 best_it 128 Best_PSNR 32.89] 
+Epoch: 196	Time: 162.96s	Loss: 0.0151	Train PSNR: 33.16	LearningRate 0.000153
+Epoch: 197	Time: 106.58s	Loss: 0.0150	Train PSNR: 33.24	LearningRate 0.000152
+Epoch: 198	Time: 106.35s	Loss: 0.0150	Train PSNR: 33.17	LearningRate 0.000152
+Epoch: 199	Time: 106.81s	Loss: 0.0148	Train PSNR: 33.36	LearningRate 0.000151
+[Ep 200 it 64	 Val PSNR: 32.62	] ----  [best_Ep 196 best_it 128 Best_PSNR 32.89] 
+Epoch: 200	Time: 162.14s	Loss: 0.0148	Train PSNR: 33.22	LearningRate 0.000151
+Epoch: 201	Time: 105.81s	Loss: 0.0150	Train PSNR: 33.21	LearningRate 0.000150
+Epoch: 202	Time: 106.38s	Loss: 0.0149	Train PSNR: 33.22	LearningRate 0.000150
+Epoch: 203	Time: 106.39s	Loss: 0.0150	Train PSNR: 33.18	LearningRate 0.000149
+[Ep 204 it 0	 Val PSNR: 32.89	] ----  [best_Ep 196 best_it 128 Best_PSNR 32.89] 
+Epoch: 204	Time: 162.16s	Loss: 0.0148	Train PSNR: 33.33	LearningRate 0.000149
+Epoch: 205	Time: 106.28s	Loss: 0.0149	Train PSNR: 33.32	LearningRate 0.000148
+Epoch: 206	Time: 106.21s	Loss: 0.0150	Train PSNR: 33.21	LearningRate 0.000148
+[Ep 207 it 202	 Val PSNR: 32.78	] ----  [best_Ep 196 best_it 128 Best_PSNR 32.89] 
+Epoch: 207	Time: 161.84s	Loss: 0.0150	Train PSNR: 33.22	LearningRate 0.000148
+Epoch: 208	Time: 106.56s	Loss: 0.0149	Train PSNR: 33.20	LearningRate 0.000147
+Epoch: 209	Time: 106.33s	Loss: 0.0149	Train PSNR: 33.19	LearningRate 0.000147
+Epoch: 210	Time: 106.65s	Loss: 0.0150	Train PSNR: 33.25	LearningRate 0.000146
+[Ep 211 it 138	 Val PSNR: 32.78	] ----  [best_Ep 196 best_it 128 Best_PSNR 32.89] 
+Epoch: 211	Time: 162.10s	Loss: 0.0150	Train PSNR: 33.24	LearningRate 0.000146
+Epoch: 212	Time: 106.84s	Loss: 0.0147	Train PSNR: 33.32	LearningRate 0.000145
+Epoch: 213	Time: 106.30s	Loss: 0.0151	Train PSNR: 33.14	LearningRate 0.000145
+Epoch: 214	Time: 105.98s	Loss: 0.0147	Train PSNR: 33.36	LearningRate 0.000144
+[Ep 215 it 74	 Val PSNR: 32.70	] ----  [best_Ep 196 best_it 128 Best_PSNR 32.89] 
+Epoch: 215	Time: 163.03s	Loss: 0.0149	Train PSNR: 33.25	LearningRate 0.000144
+Epoch: 216	Time: 106.56s	Loss: 0.0149	Train PSNR: 33.27	LearningRate 0.000143
+Epoch: 217	Time: 106.30s	Loss: 0.0147	Train PSNR: 33.40	LearningRate 0.000143
+Epoch: 218	Time: 106.58s	Loss: 0.0148	Train PSNR: 33.30	LearningRate 0.000142
+[Ep 219 it 10	 Val PSNR: 32.93	] ----  [best_Ep 219 best_it 10 Best_PSNR 32.93] 
+Epoch: 219	Time: 162.51s	Loss: 0.0147	Train PSNR: 33.36	LearningRate 0.000142
+Epoch: 220	Time: 106.55s	Loss: 0.0146	Train PSNR: 33.44	LearningRate 0.000141
+Epoch: 221	Time: 106.48s	Loss: 0.0147	Train PSNR: 33.39	LearningRate 0.000141
+[Ep 222 it 212	 Val PSNR: 32.78	] ----  [best_Ep 219 best_it 10 Best_PSNR 32.93] 
+Epoch: 222	Time: 162.49s	Loss: 0.0147	Train PSNR: 33.37	LearningRate 0.000140
+Epoch: 223	Time: 106.28s	Loss: 0.0150	Train PSNR: 33.17	LearningRate 0.000140
+Epoch: 224	Time: 106.68s	Loss: 0.0146	Train PSNR: 33.42	LearningRate 0.000139
+Epoch: 225	Time: 106.68s	Loss: 0.0146	Train PSNR: 33.44	LearningRate 0.000139
+[Ep 226 it 148	 Val PSNR: 33.04	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 226	Time: 162.66s	Loss: 0.0147	Train PSNR: 33.34	LearningRate 0.000139
+Epoch: 227	Time: 106.57s	Loss: 0.0149	Train PSNR: 33.25	LearningRate 0.000138
+Epoch: 228	Time: 107.24s	Loss: 0.0147	Train PSNR: 33.33	LearningRate 0.000138
+Epoch: 229	Time: 106.72s	Loss: 0.0148	Train PSNR: 33.35	LearningRate 0.000137
+[Ep 230 it 84	 Val PSNR: 32.94	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 230	Time: 162.38s	Loss: 0.0147	Train PSNR: 33.39	LearningRate 0.000137
+Epoch: 231	Time: 107.08s	Loss: 0.0145	Train PSNR: 33.48	LearningRate 0.000136
+Epoch: 232	Time: 106.94s	Loss: 0.0146	Train PSNR: 33.47	LearningRate 0.000136
+Epoch: 233	Time: 107.15s	Loss: 0.0146	Train PSNR: 33.48	LearningRate 0.000135
+[Ep 234 it 20	 Val PSNR: 32.67	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 234	Time: 162.28s	Loss: 0.0148	Train PSNR: 33.29	LearningRate 0.000135
+Epoch: 235	Time: 106.77s	Loss: 0.0146	Train PSNR: 33.38	LearningRate 0.000134
+Epoch: 236	Time: 106.24s	Loss: 0.0150	Train PSNR: 33.21	LearningRate 0.000134
+[Ep 237 it 222	 Val PSNR: 32.89	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 237	Time: 162.28s	Loss: 0.0144	Train PSNR: 33.54	LearningRate 0.000133
+Epoch: 238	Time: 106.31s	Loss: 0.0147	Train PSNR: 33.31	LearningRate 0.000133
+Epoch: 239	Time: 106.37s	Loss: 0.0146	Train PSNR: 33.41	LearningRate 0.000132
+Epoch: 240	Time: 106.31s	Loss: 0.0145	Train PSNR: 33.57	LearningRate 0.000132
+[Ep 241 it 158	 Val PSNR: 32.78	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 241	Time: 162.54s	Loss: 0.0147	Train PSNR: 33.37	LearningRate 0.000131
+Epoch: 242	Time: 106.03s	Loss: 0.0146	Train PSNR: 33.40	LearningRate 0.000131
+Epoch: 243	Time: 106.28s	Loss: 0.0148	Train PSNR: 33.29	LearningRate 0.000130
+Epoch: 244	Time: 107.14s	Loss: 0.0146	Train PSNR: 33.36	LearningRate 0.000130
+[Ep 245 it 94	 Val PSNR: 32.86	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 245	Time: 162.23s	Loss: 0.0147	Train PSNR: 33.36	LearningRate 0.000129
+Epoch: 246	Time: 106.40s	Loss: 0.0147	Train PSNR: 33.43	LearningRate 0.000129
+Epoch: 247	Time: 106.74s	Loss: 0.0143	Train PSNR: 33.60	LearningRate 0.000128
+Epoch: 248	Time: 107.20s	Loss: 0.0148	Train PSNR: 33.30	LearningRate 0.000128
+[Ep 249 it 30	 Val PSNR: 32.47	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 249	Time: 162.08s	Loss: 0.0146	Train PSNR: 33.45	LearningRate 0.000127
+Epoch: 250	Time: 107.10s	Loss: 0.0145	Train PSNR: 33.44	LearningRate 0.000127
+Epoch: 251	Time: 108.47s	Loss: 0.0147	Train PSNR: 33.43	LearningRate 0.000126
+[Ep 252 it 232	 Val PSNR: 32.87	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 252	Time: 162.98s	Loss: 0.0143	Train PSNR: 33.54	LearningRate 0.000126
+Epoch: 253	Time: 106.75s	Loss: 0.0149	Train PSNR: 33.29	LearningRate 0.000125
+Epoch: 254	Time: 107.33s	Loss: 0.0144	Train PSNR: 33.49	LearningRate 0.000125
+Epoch: 255	Time: 106.28s	Loss: 0.0144	Train PSNR: 33.41	LearningRate 0.000124
+[Ep 256 it 168	 Val PSNR: 32.85	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 256	Time: 163.00s	Loss: 0.0144	Train PSNR: 33.56	LearningRate 0.000124
+Epoch: 257	Time: 107.68s	Loss: 0.0145	Train PSNR: 33.48	LearningRate 0.000123
+Epoch: 258	Time: 107.05s	Loss: 0.0145	Train PSNR: 33.46	LearningRate 0.000123
+Epoch: 259	Time: 106.75s	Loss: 0.0145	Train PSNR: 33.51	LearningRate 0.000122
+[Ep 260 it 104	 Val PSNR: 32.98	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 260	Time: 163.63s	Loss: 0.0145	Train PSNR: 33.49	LearningRate 0.000122
+Epoch: 261	Time: 107.24s	Loss: 0.0145	Train PSNR: 33.51	LearningRate 0.000121
+Epoch: 262	Time: 107.08s	Loss: 0.0144	Train PSNR: 33.52	LearningRate 0.000121
+Epoch: 263	Time: 107.44s	Loss: 0.0145	Train PSNR: 33.51	LearningRate 0.000120
+[Ep 264 it 40	 Val PSNR: 32.97	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 264	Time: 162.88s	Loss: 0.0143	Train PSNR: 33.56	LearningRate 0.000119
+Epoch: 265	Time: 106.53s	Loss: 0.0144	Train PSNR: 33.48	LearningRate 0.000119
+Epoch: 266	Time: 107.30s	Loss: 0.0143	Train PSNR: 33.58	LearningRate 0.000118
+[Ep 267 it 242	 Val PSNR: 32.84	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 267	Time: 162.82s	Loss: 0.0143	Train PSNR: 33.61	LearningRate 0.000118
+Epoch: 268	Time: 106.90s	Loss: 0.0144	Train PSNR: 33.54	LearningRate 0.000117
+Epoch: 269	Time: 107.39s	Loss: 0.0143	Train PSNR: 33.59	LearningRate 0.000117
+Epoch: 270	Time: 107.24s	Loss: 0.0143	Train PSNR: 33.55	LearningRate 0.000116
+[Ep 271 it 178	 Val PSNR: 32.94	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 271	Time: 162.49s	Loss: 0.0142	Train PSNR: 33.65	LearningRate 0.000116
+Epoch: 272	Time: 107.14s	Loss: 0.0143	Train PSNR: 33.57	LearningRate 0.000115
+Epoch: 273	Time: 107.58s	Loss: 0.0144	Train PSNR: 33.55	LearningRate 0.000115
+Epoch: 274	Time: 106.40s	Loss: 0.0144	Train PSNR: 33.41	LearningRate 0.000114
+[Ep 275 it 114	 Val PSNR: 33.04	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 275	Time: 162.57s	Loss: 0.0145	Train PSNR: 33.47	LearningRate 0.000114
+Epoch: 276	Time: 106.63s	Loss: 0.0143	Train PSNR: 33.62	LearningRate 0.000113
+Epoch: 277	Time: 106.69s	Loss: 0.0145	Train PSNR: 33.49	LearningRate 0.000113
+Epoch: 278	Time: 106.35s	Loss: 0.0142	Train PSNR: 33.68	LearningRate 0.000112
+[Ep 279 it 50	 Val PSNR: 32.86	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 279	Time: 163.00s	Loss: 0.0144	Train PSNR: 33.51	LearningRate 0.000112
+Epoch: 280	Time: 107.52s	Loss: 0.0141	Train PSNR: 33.66	LearningRate 0.000111
+Epoch: 281	Time: 106.49s	Loss: 0.0144	Train PSNR: 33.53	LearningRate 0.000111
+[Ep 282 it 252	 Val PSNR: 32.96	] ----  [best_Ep 226 best_it 148 Best_PSNR 33.04] 
+Epoch: 282	Time: 162.99s	Loss: 0.0144	Train PSNR: 33.52	LearningRate 0.000110
+Epoch: 283	Time: 107.63s	Loss: 0.0142	Train PSNR: 33.62	LearningRate 0.000110
+Epoch: 284	Time: 105.89s	Loss: 0.0141	Train PSNR: 33.62	LearningRate 0.000109
+Epoch: 285	Time: 107.96s	Loss: 0.0141	Train PSNR: 33.71	LearningRate 0.000109
+[Ep 286 it 188	 Val PSNR: 33.09	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 286	Time: 163.85s	Loss: 0.0141	Train PSNR: 33.76	LearningRate 0.000108
+Epoch: 287	Time: 106.30s	Loss: 0.0140	Train PSNR: 33.75	LearningRate 0.000108
+Epoch: 288	Time: 105.83s	Loss: 0.0141	Train PSNR: 33.69	LearningRate 0.000107
+Epoch: 289	Time: 106.70s	Loss: 0.0142	Train PSNR: 33.70	LearningRate 0.000107
+[Ep 290 it 124	 Val PSNR: 33.06	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 290	Time: 162.50s	Loss: 0.0142	Train PSNR: 33.71	LearningRate 0.000106
+Epoch: 291	Time: 116.70s	Loss: 0.0141	Train PSNR: 33.74	LearningRate 0.000105
+Epoch: 292	Time: 108.50s	Loss: 0.0139	Train PSNR: 33.79	LearningRate 0.000105
+Epoch: 293	Time: 106.78s	Loss: 0.0142	Train PSNR: 33.62	LearningRate 0.000104
+[Ep 294 it 60	 Val PSNR: 32.88	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 294	Time: 162.18s	Loss: 0.0142	Train PSNR: 33.73	LearningRate 0.000104
+Epoch: 295	Time: 107.40s	Loss: 0.0141	Train PSNR: 33.72	LearningRate 0.000103
+Epoch: 296	Time: 107.50s	Loss: 0.0142	Train PSNR: 33.61	LearningRate 0.000103
+[Ep 297 it 262	 Val PSNR: 32.95	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 297	Time: 162.29s	Loss: 0.0141	Train PSNR: 33.69	LearningRate 0.000102
+Epoch: 298	Time: 107.00s	Loss: 0.0140	Train PSNR: 33.77	LearningRate 0.000102
+Epoch: 299	Time: 106.67s	Loss: 0.0143	Train PSNR: 33.62	LearningRate 0.000101
+Epoch: 300	Time: 106.32s	Loss: 0.0139	Train PSNR: 33.72	LearningRate 0.000101
+[Ep 301 it 198	 Val PSNR: 32.92	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 301	Time: 161.73s	Loss: 0.0142	Train PSNR: 33.65	LearningRate 0.000100
+Epoch: 302	Time: 107.06s	Loss: 0.0140	Train PSNR: 33.75	LearningRate 0.000100
+Epoch: 303	Time: 107.37s	Loss: 0.0139	Train PSNR: 33.73	LearningRate 0.000099
+Epoch: 304	Time: 106.86s	Loss: 0.0141	Train PSNR: 33.66	LearningRate 0.000099
+[Ep 305 it 134	 Val PSNR: 32.94	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 305	Time: 162.42s	Loss: 0.0140	Train PSNR: 33.77	LearningRate 0.000098
+Epoch: 306	Time: 106.77s	Loss: 0.0140	Train PSNR: 33.82	LearningRate 0.000098
+Epoch: 307	Time: 106.09s	Loss: 0.0138	Train PSNR: 33.86	LearningRate 0.000097
+Epoch: 308	Time: 108.04s	Loss: 0.0139	Train PSNR: 33.80	LearningRate 0.000097
+[Ep 309 it 70	 Val PSNR: 33.06	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 309	Time: 162.36s	Loss: 0.0140	Train PSNR: 33.77	LearningRate 0.000096
+Epoch: 310	Time: 106.25s	Loss: 0.0141	Train PSNR: 33.76	LearningRate 0.000096
+Epoch: 311	Time: 107.29s	Loss: 0.0140	Train PSNR: 33.76	LearningRate 0.000095
+Epoch: 312	Time: 107.41s	Loss: 0.0138	Train PSNR: 33.98	LearningRate 0.000094
+[Ep 313 it 6	 Val PSNR: 33.01	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 313	Time: 161.58s	Loss: 0.0139	Train PSNR: 33.75	LearningRate 0.000094
+Epoch: 314	Time: 107.10s	Loss: 0.0139	Train PSNR: 33.80	LearningRate 0.000093
+Epoch: 315	Time: 107.10s	Loss: 0.0139	Train PSNR: 33.83	LearningRate 0.000093
+[Ep 316 it 208	 Val PSNR: 32.96	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 316	Time: 162.62s	Loss: 0.0139	Train PSNR: 33.77	LearningRate 0.000092
+Epoch: 317	Time: 107.07s	Loss: 0.0138	Train PSNR: 33.86	LearningRate 0.000092
+Epoch: 318	Time: 106.79s	Loss: 0.0141	Train PSNR: 33.71	LearningRate 0.000091
+Epoch: 319	Time: 107.05s	Loss: 0.0141	Train PSNR: 33.78	LearningRate 0.000091
+[Ep 320 it 144	 Val PSNR: 33.02	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 320	Time: 161.53s	Loss: 0.0138	Train PSNR: 33.85	LearningRate 0.000090
+Epoch: 321	Time: 107.11s	Loss: 0.0140	Train PSNR: 33.90	LearningRate 0.000090
+Epoch: 322	Time: 106.67s	Loss: 0.0139	Train PSNR: 33.81	LearningRate 0.000089
+Epoch: 323	Time: 105.82s	Loss: 0.0138	Train PSNR: 33.89	LearningRate 0.000089
+[Ep 324 it 80	 Val PSNR: 32.94	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 324	Time: 162.65s	Loss: 0.0141	Train PSNR: 33.72	LearningRate 0.000088
+Epoch: 325	Time: 107.09s	Loss: 0.0138	Train PSNR: 33.85	LearningRate 0.000088
+Epoch: 326	Time: 105.45s	Loss: 0.0137	Train PSNR: 33.93	LearningRate 0.000087
+Epoch: 327	Time: 107.02s	Loss: 0.0137	Train PSNR: 33.86	LearningRate 0.000087
+[Ep 328 it 16	 Val PSNR: 33.05	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 328	Time: 163.21s	Loss: 0.0139	Train PSNR: 33.78	LearningRate 0.000086
+Epoch: 329	Time: 106.12s	Loss: 0.0139	Train PSNR: 33.79	LearningRate 0.000086
+Epoch: 330	Time: 105.81s	Loss: 0.0139	Train PSNR: 33.80	LearningRate 0.000085
+[Ep 331 it 218	 Val PSNR: 32.91	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 331	Time: 162.84s	Loss: 0.0139	Train PSNR: 33.79	LearningRate 0.000085
+Epoch: 332	Time: 107.36s	Loss: 0.0138	Train PSNR: 33.90	LearningRate 0.000084
+Epoch: 333	Time: 106.40s	Loss: 0.0136	Train PSNR: 33.93	LearningRate 0.000084
+Epoch: 334	Time: 106.52s	Loss: 0.0139	Train PSNR: 33.79	LearningRate 0.000083
+[Ep 335 it 154	 Val PSNR: 33.04	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 335	Time: 162.77s	Loss: 0.0139	Train PSNR: 33.85	LearningRate 0.000083
+Epoch: 336	Time: 105.31s	Loss: 0.0137	Train PSNR: 33.89	LearningRate 0.000082
+Epoch: 337	Time: 107.01s	Loss: 0.0136	Train PSNR: 33.99	LearningRate 0.000082
+Epoch: 338	Time: 107.27s	Loss: 0.0137	Train PSNR: 33.98	LearningRate 0.000081
+[Ep 339 it 90	 Val PSNR: 33.05	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 339	Time: 161.44s	Loss: 0.0138	Train PSNR: 33.86	LearningRate 0.000080
+Epoch: 340	Time: 107.53s	Loss: 0.0138	Train PSNR: 33.97	LearningRate 0.000080
+Epoch: 341	Time: 107.68s	Loss: 0.0139	Train PSNR: 33.80	LearningRate 0.000079
+Epoch: 342	Time: 107.29s	Loss: 0.0136	Train PSNR: 34.05	LearningRate 0.000079
+[Ep 343 it 26	 Val PSNR: 33.04	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 343	Time: 162.79s	Loss: 0.0137	Train PSNR: 33.92	LearningRate 0.000078
+Epoch: 344	Time: 107.65s	Loss: 0.0137	Train PSNR: 33.96	LearningRate 0.000078
+Epoch: 345	Time: 107.61s	Loss: 0.0139	Train PSNR: 33.84	LearningRate 0.000077
+[Ep 346 it 228	 Val PSNR: 33.05	] ----  [best_Ep 286 best_it 188 Best_PSNR 33.09] 
+Epoch: 346	Time: 162.30s	Loss: 0.0136	Train PSNR: 33.94	LearningRate 0.000077
+Epoch: 347	Time: 107.97s	Loss: 0.0139	Train PSNR: 33.82	LearningRate 0.000076
+Epoch: 348	Time: 107.90s	Loss: 0.0137	Train PSNR: 33.98	LearningRate 0.000076
+Epoch: 349	Time: 106.01s	Loss: 0.0137	Train PSNR: 33.98	LearningRate 0.000075
+[Ep 350 it 164	 Val PSNR: 33.13	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 350	Time: 163.78s	Loss: 0.0137	Train PSNR: 33.93	LearningRate 0.000075
+Epoch: 351	Time: 106.75s	Loss: 0.0137	Train PSNR: 34.03	LearningRate 0.000074
+Epoch: 352	Time: 106.32s	Loss: 0.0140	Train PSNR: 33.77	LearningRate 0.000074
+Epoch: 353	Time: 107.79s	Loss: 0.0136	Train PSNR: 34.04	LearningRate 0.000073
+[Ep 354 it 100	 Val PSNR: 33.06	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 354	Time: 163.31s	Loss: 0.0138	Train PSNR: 33.90	LearningRate 0.000073
+Epoch: 355	Time: 106.73s	Loss: 0.0137	Train PSNR: 33.97	LearningRate 0.000072
+Epoch: 356	Time: 107.90s	Loss: 0.0137	Train PSNR: 33.94	LearningRate 0.000072
+Epoch: 357	Time: 107.72s	Loss: 0.0137	Train PSNR: 33.92	LearningRate 0.000071
+[Ep 358 it 36	 Val PSNR: 33.03	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 358	Time: 163.20s	Loss: 0.0135	Train PSNR: 34.07	LearningRate 0.000071
+Epoch: 359	Time: 107.01s	Loss: 0.0135	Train PSNR: 34.05	LearningRate 0.000070
+Epoch: 360	Time: 107.92s	Loss: 0.0136	Train PSNR: 33.99	LearningRate 0.000070
+[Ep 361 it 238	 Val PSNR: 32.97	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 361	Time: 163.06s	Loss: 0.0135	Train PSNR: 34.05	LearningRate 0.000069
+Epoch: 362	Time: 106.93s	Loss: 0.0137	Train PSNR: 33.96	LearningRate 0.000069
+Epoch: 363	Time: 107.11s	Loss: 0.0137	Train PSNR: 34.00	LearningRate 0.000068
+Epoch: 364	Time: 107.10s	Loss: 0.0136	Train PSNR: 34.08	LearningRate 0.000068
+[Ep 365 it 174	 Val PSNR: 33.10	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 365	Time: 162.84s	Loss: 0.0136	Train PSNR: 34.03	LearningRate 0.000067
+Epoch: 366	Time: 107.40s	Loss: 0.0136	Train PSNR: 34.02	LearningRate 0.000067
+Epoch: 367	Time: 107.09s	Loss: 0.0135	Train PSNR: 34.12	LearningRate 0.000066
+Epoch: 368	Time: 106.35s	Loss: 0.0136	Train PSNR: 33.97	LearningRate 0.000066
+[Ep 369 it 110	 Val PSNR: 33.00	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 369	Time: 162.40s	Loss: 0.0137	Train PSNR: 33.97	LearningRate 0.000065
+Epoch: 370	Time: 107.07s	Loss: 0.0136	Train PSNR: 34.00	LearningRate 0.000065
+Epoch: 371	Time: 107.11s	Loss: 0.0136	Train PSNR: 34.10	LearningRate 0.000064
+Epoch: 372	Time: 106.40s	Loss: 0.0134	Train PSNR: 34.07	LearningRate 0.000064
+[Ep 373 it 46	 Val PSNR: 33.10	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 373	Time: 163.56s	Loss: 0.0134	Train PSNR: 34.17	LearningRate 0.000063
+Epoch: 374	Time: 106.68s	Loss: 0.0136	Train PSNR: 34.06	LearningRate 0.000063
+Epoch: 375	Time: 106.51s	Loss: 0.0135	Train PSNR: 33.99	LearningRate 0.000062
+[Ep 376 it 248	 Val PSNR: 33.10	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 376	Time: 162.74s	Loss: 0.0134	Train PSNR: 34.15	LearningRate 0.000062
+Epoch: 377	Time: 106.99s	Loss: 0.0134	Train PSNR: 34.15	LearningRate 0.000062
+Epoch: 378	Time: 106.25s	Loss: 0.0135	Train PSNR: 34.00	LearningRate 0.000061
+Epoch: 379	Time: 107.07s	Loss: 0.0135	Train PSNR: 34.05	LearningRate 0.000061
+[Ep 380 it 184	 Val PSNR: 33.07	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 380	Time: 163.27s	Loss: 0.0137	Train PSNR: 33.96	LearningRate 0.000060
+Epoch: 381	Time: 106.40s	Loss: 0.0135	Train PSNR: 34.02	LearningRate 0.000060
+Epoch: 382	Time: 107.25s	Loss: 0.0136	Train PSNR: 33.94	LearningRate 0.000059
+Epoch: 383	Time: 107.66s	Loss: 0.0135	Train PSNR: 34.02	LearningRate 0.000059
+[Ep 384 it 120	 Val PSNR: 33.11	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 384	Time: 162.86s	Loss: 0.0134	Train PSNR: 34.11	LearningRate 0.000058
+Epoch: 385	Time: 107.02s	Loss: 0.0135	Train PSNR: 34.06	LearningRate 0.000058
+Epoch: 386	Time: 107.81s	Loss: 0.0134	Train PSNR: 34.13	LearningRate 0.000057
+Epoch: 387	Time: 107.50s	Loss: 0.0134	Train PSNR: 34.09	LearningRate 0.000057
+[Ep 388 it 56	 Val PSNR: 33.08	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 388	Time: 162.52s	Loss: 0.0134	Train PSNR: 34.10	LearningRate 0.000056
+Epoch: 389	Time: 107.64s	Loss: 0.0134	Train PSNR: 34.16	LearningRate 0.000056
+Epoch: 390	Time: 107.26s	Loss: 0.0133	Train PSNR: 34.19	LearningRate 0.000055
+[Ep 391 it 258	 Val PSNR: 33.08	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 391	Time: 161.73s	Loss: 0.0133	Train PSNR: 34.19	LearningRate 0.000055
+Epoch: 392	Time: 106.93s	Loss: 0.0133	Train PSNR: 34.12	LearningRate 0.000054
+Epoch: 393	Time: 107.22s	Loss: 0.0135	Train PSNR: 34.07	LearningRate 0.000054
+Epoch: 394	Time: 106.13s	Loss: 0.0133	Train PSNR: 34.17	LearningRate 0.000053
+[Ep 395 it 194	 Val PSNR: 33.13	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 395	Time: 163.16s	Loss: 0.0133	Train PSNR: 34.20	LearningRate 0.000053
+Epoch: 396	Time: 106.67s	Loss: 0.0133	Train PSNR: 34.18	LearningRate 0.000053
+Epoch: 397	Time: 106.27s	Loss: 0.0133	Train PSNR: 34.17	LearningRate 0.000052
+Epoch: 398	Time: 106.48s	Loss: 0.0133	Train PSNR: 34.13	LearningRate 0.000052
+[Ep 399 it 130	 Val PSNR: 33.08	] ----  [best_Ep 350 best_it 164 Best_PSNR 33.13] 
+Epoch: 399	Time: 162.79s	Loss: 0.0134	Train PSNR: 34.15	LearningRate 0.000051
+Epoch: 400	Time: 106.55s	Loss: 0.0134	Train PSNR: 34.11	LearningRate 0.000051
+Epoch: 401	Time: 106.18s	Loss: 0.0135	Train PSNR: 34.15	LearningRate 0.000050
+Epoch: 402	Time: 106.82s	Loss: 0.0134	Train PSNR: 34.14	LearningRate 0.000050
+[Ep 403 it 66	 Val PSNR: 33.18	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 403	Time: 163.19s	Loss: 0.0134	Train PSNR: 34.19	LearningRate 0.000049
+Epoch: 404	Time: 106.94s	Loss: 0.0133	Train PSNR: 34.20	LearningRate 0.000049
+Epoch: 405	Time: 106.79s	Loss: 0.0132	Train PSNR: 34.25	LearningRate 0.000049
+Epoch: 406	Time: 107.05s	Loss: 0.0135	Train PSNR: 34.08	LearningRate 0.000048
+[Ep 407 it 2	 Val PSNR: 33.12	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 407	Time: 162.10s	Loss: 0.0133	Train PSNR: 34.13	LearningRate 0.000048
+Epoch: 408	Time: 106.71s	Loss: 0.0132	Train PSNR: 34.31	LearningRate 0.000047
+Epoch: 409	Time: 106.76s	Loss: 0.0132	Train PSNR: 34.22	LearningRate 0.000047
+[Ep 410 it 204	 Val PSNR: 33.11	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 410	Time: 162.25s	Loss: 0.0133	Train PSNR: 34.20	LearningRate 0.000046
+Epoch: 411	Time: 107.13s	Loss: 0.0133	Train PSNR: 34.19	LearningRate 0.000046
+Epoch: 412	Time: 107.14s	Loss: 0.0132	Train PSNR: 34.28	LearningRate 0.000045
+Epoch: 413	Time: 106.34s	Loss: 0.0131	Train PSNR: 34.24	LearningRate 0.000045
+[Ep 414 it 140	 Val PSNR: 33.14	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 414	Time: 162.54s	Loss: 0.0132	Train PSNR: 34.27	LearningRate 0.000045
+Epoch: 415	Time: 107.62s	Loss: 0.0133	Train PSNR: 34.17	LearningRate 0.000044
+Epoch: 416	Time: 107.16s	Loss: 0.0131	Train PSNR: 34.34	LearningRate 0.000044
+Epoch: 417	Time: 106.80s	Loss: 0.0133	Train PSNR: 34.24	LearningRate 0.000043
+[Ep 418 it 76	 Val PSNR: 33.16	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 418	Time: 162.67s	Loss: 0.0131	Train PSNR: 34.38	LearningRate 0.000043
+Epoch: 419	Time: 107.13s	Loss: 0.0132	Train PSNR: 34.26	LearningRate 0.000042
+Epoch: 420	Time: 106.90s	Loss: 0.0130	Train PSNR: 34.42	LearningRate 0.000042
+Epoch: 421	Time: 107.57s	Loss: 0.0130	Train PSNR: 34.36	LearningRate 0.000042
+[Ep 422 it 12	 Val PSNR: 33.13	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 422	Time: 162.91s	Loss: 0.0131	Train PSNR: 34.33	LearningRate 0.000041
+Epoch: 423	Time: 107.04s	Loss: 0.0132	Train PSNR: 34.25	LearningRate 0.000041
+Epoch: 424	Time: 107.16s	Loss: 0.0131	Train PSNR: 34.29	LearningRate 0.000040
+[Ep 425 it 214	 Val PSNR: 33.11	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 425	Time: 163.17s	Loss: 0.0131	Train PSNR: 34.32	LearningRate 0.000040
+Epoch: 426	Time: 106.08s	Loss: 0.0131	Train PSNR: 34.37	LearningRate 0.000039
+Epoch: 427	Time: 106.79s	Loss: 0.0131	Train PSNR: 34.31	LearningRate 0.000039
+Epoch: 428	Time: 107.58s	Loss: 0.0130	Train PSNR: 34.36	LearningRate 0.000039
+[Ep 429 it 150	 Val PSNR: 32.98	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 429	Time: 163.10s	Loss: 0.0130	Train PSNR: 34.40	LearningRate 0.000038
+Epoch: 430	Time: 106.44s	Loss: 0.0130	Train PSNR: 34.33	LearningRate 0.000038
+Epoch: 431	Time: 107.21s	Loss: 0.0128	Train PSNR: 34.58	LearningRate 0.000037
+Epoch: 432	Time: 107.37s	Loss: 0.0130	Train PSNR: 34.39	LearningRate 0.000037
+[Ep 433 it 86	 Val PSNR: 33.12	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 433	Time: 162.31s	Loss: 0.0131	Train PSNR: 34.35	LearningRate 0.000037
+Epoch: 434	Time: 107.05s	Loss: 0.0129	Train PSNR: 34.42	LearningRate 0.000036
+Epoch: 435	Time: 107.15s	Loss: 0.0129	Train PSNR: 34.54	LearningRate 0.000036
+Epoch: 436	Time: 106.89s	Loss: 0.0130	Train PSNR: 34.32	LearningRate 0.000035
+[Ep 437 it 22	 Val PSNR: 33.04	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 437	Time: 163.18s	Loss: 0.0128	Train PSNR: 34.44	LearningRate 0.000035
+Epoch: 438	Time: 107.17s	Loss: 0.0128	Train PSNR: 34.47	LearningRate 0.000035
+Epoch: 439	Time: 106.67s	Loss: 0.0129	Train PSNR: 34.42	LearningRate 0.000034
+[Ep 440 it 224	 Val PSNR: 33.14	] ----  [best_Ep 403 best_it 66 Best_PSNR 33.18] 
+Epoch: 440	Time: 162.43s	Loss: 0.0128	Train PSNR: 34.52	LearningRate 0.000034
+Epoch: 441	Time: 107.37s	Loss: 0.0129	Train PSNR: 34.48	LearningRate 0.000033
+Epoch: 442	Time: 106.24s	Loss: 0.0129	Train PSNR: 34.41	LearningRate 0.000033
+Epoch: 443	Time: 106.50s	Loss: 0.0128	Train PSNR: 34.51	LearningRate 0.000033
+[Ep 444 it 160	 Val PSNR: 33.20	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 444	Time: 164.04s	Loss: 0.0128	Train PSNR: 34.54	LearningRate 0.000032
+Epoch: 445	Time: 106.22s	Loss: 0.0128	Train PSNR: 34.47	LearningRate 0.000032
+Epoch: 446	Time: 106.52s	Loss: 0.0127	Train PSNR: 34.56	LearningRate 0.000032
+Epoch: 447	Time: 107.59s	Loss: 0.0127	Train PSNR: 34.55	LearningRate 0.000031
+[Ep 448 it 96	 Val PSNR: 33.11	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 448	Time: 162.83s	Loss: 0.0127	Train PSNR: 34.65	LearningRate 0.000031
+Epoch: 449	Time: 106.98s	Loss: 0.0128	Train PSNR: 34.55	LearningRate 0.000030
+Epoch: 450	Time: 107.11s	Loss: 0.0128	Train PSNR: 34.54	LearningRate 0.000030
+Epoch: 451	Time: 107.47s	Loss: 0.0127	Train PSNR: 34.65	LearningRate 0.000030
+[Ep 452 it 32	 Val PSNR: 33.16	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 452	Time: 163.05s	Loss: 0.0128	Train PSNR: 34.54	LearningRate 0.000029
+Epoch: 453	Time: 106.60s	Loss: 0.0126	Train PSNR: 34.63	LearningRate 0.000029
+Epoch: 454	Time: 107.25s	Loss: 0.0126	Train PSNR: 34.63	LearningRate 0.000029
+[Ep 455 it 234	 Val PSNR: 33.17	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 455	Time: 162.51s	Loss: 0.0128	Train PSNR: 34.53	LearningRate 0.000028
+Epoch: 456	Time: 106.97s	Loss: 0.0128	Train PSNR: 34.55	LearningRate 0.000028
+Epoch: 457	Time: 107.31s	Loss: 0.0128	Train PSNR: 34.55	LearningRate 0.000028
+Epoch: 458	Time: 107.31s	Loss: 0.0125	Train PSNR: 34.70	LearningRate 0.000027
+[Ep 459 it 170	 Val PSNR: 33.16	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 459	Time: 163.57s	Loss: 0.0126	Train PSNR: 34.61	LearningRate 0.000027
+Epoch: 460	Time: 107.09s	Loss: 0.0127	Train PSNR: 34.61	LearningRate 0.000026
+Epoch: 461	Time: 106.54s	Loss: 0.0127	Train PSNR: 34.56	LearningRate 0.000026
+Epoch: 462	Time: 107.31s	Loss: 0.0127	Train PSNR: 34.59	LearningRate 0.000026
+[Ep 463 it 106	 Val PSNR: 33.16	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 463	Time: 162.00s	Loss: 0.0127	Train PSNR: 34.55	LearningRate 0.000025
+Epoch: 464	Time: 106.41s	Loss: 0.0127	Train PSNR: 34.56	LearningRate 0.000025
+Epoch: 465	Time: 106.87s	Loss: 0.0126	Train PSNR: 34.60	LearningRate 0.000025
+Epoch: 466	Time: 106.63s	Loss: 0.0127	Train PSNR: 34.60	LearningRate 0.000024
+[Ep 467 it 42	 Val PSNR: 33.14	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 467	Time: 162.62s	Loss: 0.0126	Train PSNR: 34.66	LearningRate 0.000024
+Epoch: 468	Time: 106.84s	Loss: 0.0126	Train PSNR: 34.63	LearningRate 0.000024
+Epoch: 469	Time: 106.69s	Loss: 0.0127	Train PSNR: 34.59	LearningRate 0.000023
+[Ep 470 it 244	 Val PSNR: 33.14	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 470	Time: 163.99s	Loss: 0.0126	Train PSNR: 34.72	LearningRate 0.000023
+Epoch: 471	Time: 106.65s	Loss: 0.0125	Train PSNR: 34.74	LearningRate 0.000023
+Epoch: 472	Time: 106.67s	Loss: 0.0127	Train PSNR: 34.60	LearningRate 0.000022
+Epoch: 473	Time: 107.70s	Loss: 0.0125	Train PSNR: 34.67	LearningRate 0.000022
+[Ep 474 it 180	 Val PSNR: 33.14	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 474	Time: 162.99s	Loss: 0.0126	Train PSNR: 34.69	LearningRate 0.000022
+Epoch: 475	Time: 106.43s	Loss: 0.0125	Train PSNR: 34.60	LearningRate 0.000021
+Epoch: 476	Time: 106.72s	Loss: 0.0125	Train PSNR: 34.77	LearningRate 0.000021
+Epoch: 477	Time: 106.65s	Loss: 0.0125	Train PSNR: 34.79	LearningRate 0.000021
+[Ep 478 it 116	 Val PSNR: 33.09	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 478	Time: 162.21s	Loss: 0.0126	Train PSNR: 34.67	LearningRate 0.000021
+Epoch: 479	Time: 106.89s	Loss: 0.0126	Train PSNR: 34.70	LearningRate 0.000020
+Epoch: 480	Time: 107.12s	Loss: 0.0124	Train PSNR: 34.83	LearningRate 0.000020
+Epoch: 481	Time: 106.84s	Loss: 0.0126	Train PSNR: 34.66	LearningRate 0.000020
+[Ep 482 it 52	 Val PSNR: 33.08	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 482	Time: 162.20s	Loss: 0.0125	Train PSNR: 34.77	LearningRate 0.000019
+Epoch: 483	Time: 106.75s	Loss: 0.0127	Train PSNR: 34.63	LearningRate 0.000019
+Epoch: 484	Time: 106.28s	Loss: 0.0125	Train PSNR: 34.75	LearningRate 0.000019
+[Ep 485 it 254	 Val PSNR: 33.09	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 485	Time: 162.73s	Loss: 0.0123	Train PSNR: 34.83	LearningRate 0.000018
+Epoch: 486	Time: 107.27s	Loss: 0.0125	Train PSNR: 34.75	LearningRate 0.000018
+Epoch: 487	Time: 106.41s	Loss: 0.0124	Train PSNR: 34.83	LearningRate 0.000018
+Epoch: 488	Time: 106.70s	Loss: 0.0124	Train PSNR: 34.80	LearningRate 0.000017
+[Ep 489 it 190	 Val PSNR: 33.16	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 489	Time: 163.01s	Loss: 0.0125	Train PSNR: 34.76	LearningRate 0.000017
+Epoch: 490	Time: 106.89s	Loss: 0.0126	Train PSNR: 34.74	LearningRate 0.000017
+Epoch: 491	Time: 107.46s	Loss: 0.0124	Train PSNR: 34.87	LearningRate 0.000017
+Epoch: 492	Time: 106.90s	Loss: 0.0124	Train PSNR: 34.82	LearningRate 0.000016
+[Ep 493 it 126	 Val PSNR: 33.13	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 493	Time: 162.68s	Loss: 0.0124	Train PSNR: 34.85	LearningRate 0.000016
+Epoch: 494	Time: 107.41s	Loss: 0.0125	Train PSNR: 34.77	LearningRate 0.000016
+Epoch: 495	Time: 106.76s	Loss: 0.0125	Train PSNR: 34.76	LearningRate 0.000016
+Epoch: 496	Time: 107.51s	Loss: 0.0125	Train PSNR: 34.72	LearningRate 0.000015
+[Ep 497 it 62	 Val PSNR: 33.12	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 497	Time: 162.16s	Loss: 0.0124	Train PSNR: 34.79	LearningRate 0.000015
+Epoch: 498	Time: 106.43s	Loss: 0.0123	Train PSNR: 34.83	LearningRate 0.000015
+Epoch: 499	Time: 107.18s	Loss: 0.0123	Train PSNR: 34.88	LearningRate 0.000014
+[Ep 500 it 264	 Val PSNR: 33.03	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 500	Time: 162.06s	Loss: 0.0125	Train PSNR: 34.78	LearningRate 0.000014
+Epoch: 501	Time: 106.40s	Loss: 0.0124	Train PSNR: 34.86	LearningRate 0.000014
+Epoch: 502	Time: 107.58s	Loss: 0.0122	Train PSNR: 34.98	LearningRate 0.000014
+Epoch: 503	Time: 106.35s	Loss: 0.0124	Train PSNR: 34.75	LearningRate 0.000013
+[Ep 504 it 200	 Val PSNR: 33.09	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 504	Time: 162.78s	Loss: 0.0125	Train PSNR: 34.82	LearningRate 0.000013
+Epoch: 505	Time: 106.23s	Loss: 0.0123	Train PSNR: 34.93	LearningRate 0.000013
+Epoch: 506	Time: 106.42s	Loss: 0.0124	Train PSNR: 34.83	LearningRate 0.000013
+Epoch: 507	Time: 107.59s	Loss: 0.0122	Train PSNR: 34.98	LearningRate 0.000012
+[Ep 508 it 136	 Val PSNR: 33.13	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 508	Time: 162.11s	Loss: 0.0122	Train PSNR: 34.88	LearningRate 0.000012
+Epoch: 509	Time: 105.94s	Loss: 0.0124	Train PSNR: 34.83	LearningRate 0.000012
+Epoch: 510	Time: 107.09s	Loss: 0.0124	Train PSNR: 34.85	LearningRate 0.000012
+Epoch: 511	Time: 106.78s	Loss: 0.0125	Train PSNR: 34.80	LearningRate 0.000011
+[Ep 512 it 72	 Val PSNR: 33.09	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 512	Time: 162.71s	Loss: 0.0124	Train PSNR: 34.83	LearningRate 0.000011
+Epoch: 513	Time: 106.55s	Loss: 0.0122	Train PSNR: 34.99	LearningRate 0.000011
+Epoch: 514	Time: 107.02s	Loss: 0.0122	Train PSNR: 34.92	LearningRate 0.000011
+Epoch: 515	Time: 107.49s	Loss: 0.0122	Train PSNR: 35.02	LearningRate 0.000011
+[Ep 516 it 8	 Val PSNR: 33.07	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 516	Time: 163.24s	Loss: 0.0122	Train PSNR: 34.88	LearningRate 0.000010
+Epoch: 517	Time: 106.95s	Loss: 0.0123	Train PSNR: 34.88	LearningRate 0.000010
+Epoch: 518	Time: 106.98s	Loss: 0.0123	Train PSNR: 35.01	LearningRate 0.000010
+[Ep 519 it 210	 Val PSNR: 33.13	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 519	Time: 163.06s	Loss: 0.0122	Train PSNR: 34.90	LearningRate 0.000010
+Epoch: 520	Time: 107.45s	Loss: 0.0122	Train PSNR: 35.02	LearningRate 0.000009
+Epoch: 521	Time: 107.31s	Loss: 0.0123	Train PSNR: 34.78	LearningRate 0.000009
+Epoch: 522	Time: 107.32s	Loss: 0.0122	Train PSNR: 34.98	LearningRate 0.000009
+[Ep 523 it 146	 Val PSNR: 33.12	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 523	Time: 163.36s	Loss: 0.0122	Train PSNR: 34.96	LearningRate 0.000009
+Epoch: 524	Time: 106.47s	Loss: 0.0122	Train PSNR: 34.94	LearningRate 0.000009
+Epoch: 525	Time: 107.11s	Loss: 0.0124	Train PSNR: 34.82	LearningRate 0.000008
+Epoch: 526	Time: 106.67s	Loss: 0.0123	Train PSNR: 34.92	LearningRate 0.000008
+[Ep 527 it 82	 Val PSNR: 33.09	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 527	Time: 163.51s	Loss: 0.0124	Train PSNR: 34.80	LearningRate 0.000008
+Epoch: 528	Time: 107.64s	Loss: 0.0121	Train PSNR: 35.02	LearningRate 0.000008
+Epoch: 529	Time: 107.07s	Loss: 0.0121	Train PSNR: 34.96	LearningRate 0.000008
+Epoch: 530	Time: 107.69s	Loss: 0.0123	Train PSNR: 34.87	LearningRate 0.000007
+[Ep 531 it 18	 Val PSNR: 33.06	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 531	Time: 163.87s	Loss: 0.0122	Train PSNR: 35.05	LearningRate 0.000007
+Epoch: 532	Time: 106.75s	Loss: 0.0121	Train PSNR: 34.97	LearningRate 0.000007
+Epoch: 533	Time: 107.67s	Loss: 0.0122	Train PSNR: 35.02	LearningRate 0.000007
+[Ep 534 it 220	 Val PSNR: 33.05	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 534	Time: 162.25s	Loss: 0.0121	Train PSNR: 35.02	LearningRate 0.000007
+Epoch: 535	Time: 106.62s	Loss: 0.0122	Train PSNR: 34.84	LearningRate 0.000007
+Epoch: 536	Time: 107.66s	Loss: 0.0120	Train PSNR: 35.03	LearningRate 0.000006
+Epoch: 537	Time: 107.12s	Loss: 0.0123	Train PSNR: 34.85	LearningRate 0.000006
+[Ep 538 it 156	 Val PSNR: 33.08	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 538	Time: 163.38s	Loss: 0.0121	Train PSNR: 34.99	LearningRate 0.000006
+Epoch: 539	Time: 108.21s	Loss: 0.0121	Train PSNR: 35.05	LearningRate 0.000006
+Epoch: 540	Time: 106.96s	Loss: 0.0122	Train PSNR: 34.94	LearningRate 0.000006
+Epoch: 541	Time: 108.05s	Loss: 0.0122	Train PSNR: 34.92	LearningRate 0.000006
+[Ep 542 it 92	 Val PSNR: 33.09	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 542	Time: 162.95s	Loss: 0.0124	Train PSNR: 34.84	LearningRate 0.000005
+Epoch: 543	Time: 108.78s	Loss: 0.0121	Train PSNR: 34.99	LearningRate 0.000005
+Epoch: 544	Time: 108.75s	Loss: 0.0122	Train PSNR: 34.93	LearningRate 0.000005
+Epoch: 545	Time: 107.36s	Loss: 0.0122	Train PSNR: 34.96	LearningRate 0.000005
+[Ep 546 it 28	 Val PSNR: 33.05	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 546	Time: 162.34s	Loss: 0.0122	Train PSNR: 35.01	LearningRate 0.000005
+Epoch: 547	Time: 106.85s	Loss: 0.0121	Train PSNR: 35.01	LearningRate 0.000005
+Epoch: 548	Time: 106.96s	Loss: 0.0122	Train PSNR: 35.01	LearningRate 0.000005
+[Ep 549 it 230	 Val PSNR: 33.08	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 549	Time: 163.81s	Loss: 0.0121	Train PSNR: 35.03	LearningRate 0.000004
+Epoch: 550	Time: 106.42s	Loss: 0.0124	Train PSNR: 34.84	LearningRate 0.000004
+Epoch: 551	Time: 106.21s	Loss: 0.0122	Train PSNR: 34.93	LearningRate 0.000004
+Epoch: 552	Time: 107.35s	Loss: 0.0121	Train PSNR: 34.98	LearningRate 0.000004
+[Ep 553 it 166	 Val PSNR: 33.10	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 553	Time: 163.41s	Loss: 0.0123	Train PSNR: 34.92	LearningRate 0.000004
+Epoch: 554	Time: 106.80s	Loss: 0.0121	Train PSNR: 35.01	LearningRate 0.000004
+Epoch: 555	Time: 107.52s	Loss: 0.0121	Train PSNR: 35.03	LearningRate 0.000004
+Epoch: 556	Time: 107.37s	Loss: 0.0121	Train PSNR: 35.06	LearningRate 0.000004
+[Ep 557 it 102	 Val PSNR: 33.05	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 557	Time: 162.53s	Loss: 0.0120	Train PSNR: 35.05	LearningRate 0.000003
+Epoch: 558	Time: 107.02s	Loss: 0.0121	Train PSNR: 35.04	LearningRate 0.000003
+Epoch: 559	Time: 107.23s	Loss: 0.0122	Train PSNR: 34.90	LearningRate 0.000003
+Epoch: 560	Time: 107.12s	Loss: 0.0122	Train PSNR: 34.88	LearningRate 0.000003
+[Ep 561 it 38	 Val PSNR: 33.11	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 561	Time: 162.68s	Loss: 0.0121	Train PSNR: 35.02	LearningRate 0.000003
+Epoch: 562	Time: 107.02s	Loss: 0.0122	Train PSNR: 34.98	LearningRate 0.000003
+Epoch: 563	Time: 105.88s	Loss: 0.0123	Train PSNR: 34.97	LearningRate 0.000003
+[Ep 564 it 240	 Val PSNR: 33.12	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 564	Time: 162.36s	Loss: 0.0121	Train PSNR: 35.06	LearningRate 0.000003
+Epoch: 565	Time: 107.10s	Loss: 0.0122	Train PSNR: 34.93	LearningRate 0.000003
+Epoch: 566	Time: 106.84s	Loss: 0.0122	Train PSNR: 35.03	LearningRate 0.000002
+Epoch: 567	Time: 107.20s	Loss: 0.0120	Train PSNR: 35.07	LearningRate 0.000002
+[Ep 568 it 176	 Val PSNR: 33.10	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 568	Time: 163.00s	Loss: 0.0120	Train PSNR: 35.12	LearningRate 0.000002
+Epoch: 569	Time: 106.70s	Loss: 0.0120	Train PSNR: 35.07	LearningRate 0.000002
+Epoch: 570	Time: 107.06s	Loss: 0.0121	Train PSNR: 34.95	LearningRate 0.000002
+Epoch: 571	Time: 107.18s	Loss: 0.0120	Train PSNR: 35.07	LearningRate 0.000002
+[Ep 572 it 112	 Val PSNR: 33.12	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 572	Time: 163.04s	Loss: 0.0122	Train PSNR: 34.94	LearningRate 0.000002
+Epoch: 573	Time: 107.82s	Loss: 0.0121	Train PSNR: 35.05	LearningRate 0.000002
+Epoch: 574	Time: 107.04s	Loss: 0.0121	Train PSNR: 35.00	LearningRate 0.000002
+Epoch: 575	Time: 107.58s	Loss: 0.0119	Train PSNR: 35.09	LearningRate 0.000002
+[Ep 576 it 48	 Val PSNR: 33.10	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 576	Time: 162.91s	Loss: 0.0120	Train PSNR: 35.07	LearningRate 0.000002
+Epoch: 577	Time: 107.03s	Loss: 0.0122	Train PSNR: 34.94	LearningRate 0.000002
+Epoch: 578	Time: 107.76s	Loss: 0.0122	Train PSNR: 34.97	LearningRate 0.000002
+[Ep 579 it 250	 Val PSNR: 33.11	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 579	Time: 162.54s	Loss: 0.0121	Train PSNR: 35.02	LearningRate 0.000002
+Epoch: 580	Time: 107.10s	Loss: 0.0122	Train PSNR: 34.88	LearningRate 0.000001
+Epoch: 581	Time: 108.15s	Loss: 0.0121	Train PSNR: 35.03	LearningRate 0.000001
+Epoch: 582	Time: 107.63s	Loss: 0.0121	Train PSNR: 34.91	LearningRate 0.000001
+[Ep 583 it 186	 Val PSNR: 33.08	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 583	Time: 162.91s	Loss: 0.0122	Train PSNR: 35.03	LearningRate 0.000001
+Epoch: 584	Time: 107.06s	Loss: 0.0120	Train PSNR: 35.13	LearningRate 0.000001
+Epoch: 585	Time: 107.01s	Loss: 0.0121	Train PSNR: 34.98	LearningRate 0.000001
+Epoch: 586	Time: 106.53s	Loss: 0.0121	Train PSNR: 35.03	LearningRate 0.000001
+[Ep 587 it 122	 Val PSNR: 33.10	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 587	Time: 162.82s	Loss: 0.0120	Train PSNR: 35.03	LearningRate 0.000001
+Epoch: 588	Time: 107.33s	Loss: 0.0120	Train PSNR: 35.13	LearningRate 0.000001
+Epoch: 589	Time: 107.28s	Loss: 0.0121	Train PSNR: 34.99	LearningRate 0.000001
+Epoch: 590	Time: 106.69s	Loss: 0.0121	Train PSNR: 35.04	LearningRate 0.000001
+[Ep 591 it 58	 Val PSNR: 33.10	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 591	Time: 163.78s	Loss: 0.0121	Train PSNR: 34.99	LearningRate 0.000001
+Epoch: 592	Time: 106.55s	Loss: 0.0122	Train PSNR: 34.95	LearningRate 0.000001
+Epoch: 593	Time: 106.53s	Loss: 0.0120	Train PSNR: 35.09	LearningRate 0.000001
+[Ep 594 it 260	 Val PSNR: 33.10	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 594	Time: 163.62s	Loss: 0.0122	Train PSNR: 35.00	LearningRate 0.000001
+Epoch: 595	Time: 106.41s	Loss: 0.0121	Train PSNR: 35.01	LearningRate 0.000001
+Epoch: 596	Time: 106.19s	Loss: 0.0120	Train PSNR: 35.05	LearningRate 0.000001
+Epoch: 597	Time: 107.32s	Loss: 0.0120	Train PSNR: 35.06	LearningRate 0.000001
+[Ep 598 it 196	 Val PSNR: 33.10	] ----  [best_Ep 444 best_it 160 Best_PSNR 33.20] 
+Epoch: 598	Time: 162.86s	Loss: 0.0120	Train PSNR: 35.17	LearningRate 0.000001
+Epoch: 599	Time: 106.91s	Loss: 0.0121	Train PSNR: 34.97	LearningRate 0.000001
+Epoch: 600	Time: 107.47s	Loss: 0.0121	Train PSNR: 35.02	LearningRate 0.000001
