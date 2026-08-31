@@ -16,6 +16,9 @@
 ## 📝 Method
 
 <div align="center">
+  <img src="Figure/swap2-1.jpg" alt="PhasorFormer" width="800">
+  <br>
+  <em>Swap Phase and Amp.</em>
   <img src="Figure/framework2.jpg" alt="PhasorFormer" width="800">
   <br>
   <em>Overview of the proposed PhasorFormer framework.</em>
